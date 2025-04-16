@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
 		marginBottom: Platform.OS === "ios" ? 16 : 0,
 	},
 	inputLabel: {
-		fontFamily: "Archivo-Exp-Bold",
+		fontFamily: "Archivo-Med",
 		fontSize: 16,
 		color: "#201f1d",
 	},

@@ -28,7 +28,10 @@ const DashboardPage = () => {
 					<Text style={styles.cardH2}>Categories</Text>
 					<Text style={styles.cardDate}>as of April 2025</Text>
 				</View>
-				<TouchableOpacity style={styles.dashboardCard}>
+				<TouchableOpacity
+					onPress={() => router.push("/dashboard/products/")}
+					style={styles.dashboardCard}
+				>
 					<View>
 						<Text style={styles.cardH1}>207</Text>
 						<Text style={styles.cardH2}>Products</Text>
