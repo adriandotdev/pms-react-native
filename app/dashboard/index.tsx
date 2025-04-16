@@ -7,6 +7,7 @@ import {
 	TouchableOpacity,
 	View,
 } from "react-native";
+import FadeInView from "../components/animation_providers/FadeInView";
 import LeftArrowIcon from "../components/icons/LeftArrowIcon";
 import SettingsIcon from "../components/icons/SettingsIcon";
 
@@ -14,7 +15,7 @@ const DashboardPage = () => {
 	const router = useRouter();
 
 	return (
-		<View style={styles.container}>
+		<FadeInView style={{ ...styles.container }}>
 			<View style={styles.header}>
 				<View style={{ flexDirection: "row", alignItems: "center", gap: 16 }}>
 					<LeftArrowIcon onPress={() => router.back()} />
@@ -51,7 +52,7 @@ const DashboardPage = () => {
 				</View>
 			</View>
 			<View></View>
-		</View>
+		</FadeInView>
 	);
 };
 

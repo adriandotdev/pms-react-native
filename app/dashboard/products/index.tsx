@@ -8,6 +8,7 @@ import {
 	TextInput,
 	View,
 } from "react-native";
+import FadeInView from "../../components/animation_providers/FadeInView";
 import LeftArrowIcon from "../../components/icons/LeftArrowIcon";
 import SettingsIcon from "../../components/icons/SettingsIcon";
 
@@ -15,7 +16,7 @@ const ProductsPage = () => {
 	const router = useRouter();
 
 	return (
-		<View style={styles.container}>
+		<FadeInView style={{ ...styles.container }}>
 			<View style={styles.header}>
 				<View style={{ flexDirection: "row", alignItems: "center", gap: 16 }}>
 					<LeftArrowIcon onPress={() => router.back()} />
@@ -56,7 +57,7 @@ const ProductsPage = () => {
 					</View>
 				)}
 			/>
-		</View>
+		</FadeInView>
 	);
 };
 

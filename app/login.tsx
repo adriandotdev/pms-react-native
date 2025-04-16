@@ -8,12 +8,13 @@ import {
 	TextInput,
 	View,
 } from "react-native";
+import FadeInView from "./components/animation_providers/FadeInView";
 
 const LoginPage = () => {
 	const router = useRouter();
 
 	return (
-		<View style={styles.container}>
+		<FadeInView style={{ ...styles.container }}>
 			<Text style={styles.loginTitle}>Welcome Back</Text>
 
 			<View style={{ gap: 8 }}>
@@ -45,7 +46,7 @@ const LoginPage = () => {
 			>
 				<Text style={styles.buttonText}>Sign In</Text>
 			</Pressable>
-		</View>
+		</FadeInView>
 	);
 };
 
