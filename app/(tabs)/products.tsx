@@ -1,6 +1,7 @@
+import { useIsFocused } from "@react-navigation/native";
 import axios from "axios";
-import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useState } from "react";
 import {
 	ActivityIndicator,
 	FlatList,
@@ -11,10 +12,11 @@ import {
 	TouchableOpacity,
 	View,
 } from "react-native";
-import FadeInView from "../../components/animation_providers/FadeInView";
-import AddIcon from "../../components/icons/AddIcon";
-import LeftArrowIcon from "../../components/icons/LeftArrowIcon";
-import SettingsIcon from "../../components/icons/SettingsIcon";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import FadeInView from "../components/animation_providers/FadeInView";
+import AddIcon from "../components/icons/AddIcon";
+import LeftArrowIcon from "../components/icons/LeftArrowIcon";
+import SettingsIcon from "../components/icons/SettingsIcon";
 
 interface Category {
 	id: number;
@@ -50,12 +52,16 @@ const Product = ({ item }: { item: Product }) => {
 };
 
 const ProductsPage = () => {
+	const insets = useSafeAreaInsets();
+
 	const router = useRouter();
 	const [products, setProducts] = useState<Product[]>([]);
 
 	const [page, setPage] = useState(1);
 	const [loading, setLoading] = useState(false);
 	const [hasMore, setHasMore] = useState(true);
+
+	const isFocused = useIsFocused();
 
 	const fetchData = async () => {
 		if (loading || !hasMore) return;
@@ -68,14 +74,20 @@ const ProductsPage = () => {
 
 		if ((page - 1) * 10 >= response.data.totalProducts) setHasMore(false);
 
-		setProducts((prev) => [...(prev as Product[]), ...response.data.products]);
+		setProducts((prev) => {
+			const existingIds = new Set(prev.map((p) => p.id));
+			const newProducts = response.data.products.filter(
+				(p: Product) => !existingIds.has(p.id)
+			);
+			return [...prev, ...newProducts];
+		});
 		setPage((prev) => prev + 1);
 		setLoading(false);
 	};
 
-	useEffect(() => {
+	useFocusEffect(() => {
 		fetchData();
-	}, []);
+	});
 
 	return (
 		<FadeInView style={{ ...styles.container }}>
@@ -89,7 +101,8 @@ const ProductsPage = () => {
 			<TextInput placeholder="Search..." style={styles.searchInput} />
 			<FlatList
 				contentContainerStyle={{
-					paddingBottom: Platform.OS === "ios" ? 50 : 100,
+					paddingBottom: insets.bottom,
+					paddingHorizontal: 24,
 				}}
 				keyExtractor={(item) => item.id.toString()}
 				onEndReachedThreshold={0.5}
@@ -100,7 +113,13 @@ const ProductsPage = () => {
 					loading ? <ActivityIndicator size="large" /> : null
 				}
 			/>
-			<TouchableOpacity style={styles.addButton}>
+			<TouchableOpacity
+				style={{
+					...styles.addButton,
+					bottom: insets.bottom + 15,
+					right: insets.right + 15,
+				}}
+			>
 				<View>
 					<AddIcon width={24} height={24} color={"#e8a123"} />
 				</View>
@@ -113,17 +132,22 @@ export default ProductsPage;
 
 const styles = StyleSheet.create({
 	container: {
-		paddingVertical: Platform.OS === "ios" ? 0 : 48,
-		paddingHorizontal: 24,
+		paddingVertical: Platform.OS === "ios" ? 16 : 16,
+
 		gap: 16,
 		position: "relative",
 		height: "100%",
+		backgroundColor: "white",
 	},
 	header: {
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "space-between",
 		gap: 16,
+		borderBottomColor: "#ccc",
+		borderBottomWidth: 1,
+		paddingBottom: 16,
+		paddingHorizontal: 24,
 	},
 	title: {
 		fontFamily: "Archivo-Exp-Bold",
@@ -138,6 +162,7 @@ const styles = StyleSheet.create({
 		borderRadius: 4,
 		fontFamily: "Archivo-Reg",
 		paddingHorizontal: 10,
+		marginHorizontal: 24,
 	},
 	productCard: {
 		padding: 16,
@@ -178,8 +203,6 @@ const styles = StyleSheet.create({
 		width: 60,
 		borderRadius: "100%",
 		fontSize: 16,
-		bottom: Platform.OS === "ios" ? 60 : 100,
-		right: Platform.OS === "ios" ? 20 : 20,
 		aspectRatio: 1,
 		justifyContent: "center",
 		alignItems: "center",

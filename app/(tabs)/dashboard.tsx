@@ -6,6 +6,7 @@ import {
 	TouchableOpacity,
 	View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import FadeInView from "../components/animation_providers/FadeInView";
 import SlideUpView from "../components/animation_providers/SlideUpView";
 import LeftArrowIcon from "../components/icons/LeftArrowIcon";
@@ -13,9 +14,10 @@ import SettingsIcon from "../components/icons/SettingsIcon";
 
 const DashboardPage = () => {
 	const router = useRouter();
+	const insets = useSafeAreaInsets();
 
 	return (
-		<FadeInView style={{ ...styles.container }}>
+		<FadeInView style={styles.container}>
 			<View style={styles.header}>
 				<View style={{ flexDirection: "row", alignItems: "center", gap: 16 }}>
 					<LeftArrowIcon onPress={() => router.back()} />
@@ -59,17 +61,21 @@ export default DashboardPage;
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
-		flexDirection: "column",
-		paddingHorizontal: 24,
-		width: "100%",
-		paddingVertical: Platform.OS === "ios" ? 0 : 48,
+		paddingVertical: Platform.OS === "ios" ? 16 : 16,
+		gap: 16,
+		position: "relative",
+		height: "100%",
+		backgroundColor: "white",
 	},
 	header: {
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "space-between",
 		gap: 16,
+		borderBottomColor: "#ccc",
+		borderBottomWidth: 1,
+		paddingBottom: 16,
+		paddingHorizontal: 24,
 	},
 	title: {
 		fontFamily: "Archivo-Exp-Bold",
@@ -82,7 +88,7 @@ const styles = StyleSheet.create({
 		flexWrap: "wrap",
 		justifyContent: "space-between", // Makes spacing nice
 		gap: 1, // Optional if supported
-		marginTop: 16,
+		paddingHorizontal: 24,
 	},
 	dashboardCard: {
 		backgroundColor: "#ffffff",
