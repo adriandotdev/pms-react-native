@@ -1,19 +1,81 @@
+import axios from "axios";
 import { useRouter } from "expo-router";
-import React from "react";
+import { useEffect, useState } from "react";
 import {
+	ActivityIndicator,
 	FlatList,
 	Platform,
 	StyleSheet,
 	Text,
 	TextInput,
+	TouchableOpacity,
 	View,
 } from "react-native";
 import FadeInView from "../../components/animation_providers/FadeInView";
+import AddIcon from "../../components/icons/AddIcon";
 import LeftArrowIcon from "../../components/icons/LeftArrowIcon";
 import SettingsIcon from "../../components/icons/SettingsIcon";
 
+interface Category {
+	id: number;
+	name: string;
+	description: string | null;
+	createdAt: string; // ISO date string
+	products: Product[]; // You can replace `any` with `Product[]` if you want to link back
+}
+
+interface Product {
+	id: number;
+	name: string;
+	price: number;
+	categoryId: number;
+	category: Category;
+	createdAt: string; // ISO date string
+	description: string | null;
+	expirationDate: string; // ISO date string
+}
+
+const Product = ({ item }: { item: Product }) => {
+	return (
+		<View style={styles.productCard}>
+			<View>
+				<Text style={styles.productName}>{item.name}</Text>
+				<Text style={styles.productPrice}>{item.price}</Text>
+			</View>
+			<View style={styles.productBadge}>
+				<Text style={styles.productBadgeText}>{item.category.name}</Text>
+			</View>
+		</View>
+	);
+};
+
 const ProductsPage = () => {
 	const router = useRouter();
+	const [products, setProducts] = useState<Product[]>([]);
+
+	const [page, setPage] = useState(1);
+	const [loading, setLoading] = useState(false);
+	const [hasMore, setHasMore] = useState(true);
+
+	const fetchData = async () => {
+		if (loading || !hasMore) return;
+
+		setLoading(true);
+
+		const response = await axios.get(
+			`https://64ec-149-30-139-139.ngrok-free.app/api/v1/products?pageNumber=${page}`
+		);
+
+		if ((page - 1) * 10 >= response.data.totalProducts) setHasMore(false);
+
+		setProducts((prev) => [...(prev as Product[]), ...response.data.products]);
+		setPage((prev) => prev + 1);
+		setLoading(false);
+	};
+
+	useEffect(() => {
+		fetchData();
+	}, []);
 
 	return (
 		<FadeInView style={{ ...styles.container }}>
@@ -26,37 +88,23 @@ const ProductsPage = () => {
 			</View>
 			<TextInput placeholder="Search..." style={styles.searchInput} />
 			<FlatList
-				contentContainerStyle={{ paddingBottom: 100 }}
-				data={[
-					{ name: "Ajinomoto", price: 45, category: "Beverage" },
-					{ name: "Ajinomoto", price: 45, category: "Beverage" },
-					{ name: "Ajinomoto", price: 45, category: "Beverage" },
-					{ name: "Ajinomoto", price: 45, category: "Beverage" },
-					{ name: "Ajinomoto", price: 45, category: "Beverage" },
-					{ name: "Ajinomoto", price: 45, category: "Beverage" },
-					{ name: "Ajinomoto", price: 45, category: "Beverage" },
-					{ name: "Ajinomoto", price: 45, category: "Beverage" },
-					{ name: "Ajinomoto", price: 45, category: "Beverage" },
-					{ name: "Ajinomoto", price: 45, category: "Beverage" },
-					{ name: "Ajinomoto", price: 45, category: "Beverage" },
-					{ name: "Ajinomoto", price: 45, category: "Beverage" },
-					{ name: "Ajinomoto", price: 45, category: "Beverage" },
-					{ name: "Ajinomoto", price: 45, category: "Beverage" },
-					{ name: "Ajinomoto", price: 45, category: "Beverage" },
-					{ name: "Ajinomoto", price: 45, category: "Beverage" },
-				]}
-				renderItem={({ item }) => (
-					<View style={styles.productCard}>
-						<View>
-							<Text style={styles.productName}>{item.name}</Text>
-							<Text style={styles.productPrice}>{item.price}</Text>
-						</View>
-						<View style={styles.productBadge}>
-							<Text style={styles.productBadgeText}>{item.category}</Text>
-						</View>
-					</View>
-				)}
+				contentContainerStyle={{
+					paddingBottom: Platform.OS === "ios" ? 50 : 100,
+				}}
+				keyExtractor={(item) => item.id.toString()}
+				onEndReachedThreshold={0.5}
+				data={products}
+				renderItem={Product}
+				onEndReached={fetchData}
+				ListFooterComponent={
+					loading ? <ActivityIndicator size="large" /> : null
+				}
 			/>
+			<TouchableOpacity style={styles.addButton}>
+				<View>
+					<AddIcon width={24} height={24} color={"#e8a123"} />
+				</View>
+			</TouchableOpacity>
 		</FadeInView>
 	);
 };
@@ -68,6 +116,8 @@ const styles = StyleSheet.create({
 		paddingVertical: Platform.OS === "ios" ? 0 : 48,
 		paddingHorizontal: 24,
 		gap: 16,
+		position: "relative",
+		height: "100%",
 	},
 	header: {
 		flexDirection: "row",
@@ -119,5 +169,27 @@ const styles = StyleSheet.create({
 	},
 	productBadgeText: {
 		fontSize: 12,
+	},
+	addButton: {
+		backgroundColor: "white",
+		borderWidth: 1,
+		borderColor: "#e8a123",
+		position: "absolute",
+		width: 60,
+		borderRadius: "100%",
+		fontSize: 16,
+		bottom: Platform.OS === "ios" ? 60 : 100,
+		right: Platform.OS === "ios" ? 20 : 20,
+		aspectRatio: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		shadowColor: "#000",
+		shadowOffset: {
+			width: 0,
+			height: 4,
+		},
+		shadowOpacity: 0.2,
+		shadowRadius: 4,
+		elevation: 5,
 	},
 });

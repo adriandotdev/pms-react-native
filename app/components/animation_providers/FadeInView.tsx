@@ -1,17 +1,14 @@
 import React, { PropsWithChildren, useEffect } from "react";
-import { Animated, useAnimatedValue, ViewStyle } from "react-native";
+import { ViewStyle } from "react-native";
+import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
 
 type FadeInViewProps = PropsWithChildren<{ style: ViewStyle }>;
 
 const FadeInView: React.FC<FadeInViewProps> = (props) => {
-	const fadeAnim = useAnimatedValue(0);
+	const fadeAnim = useSharedValue(0);
 
 	useEffect(() => {
-		Animated.timing(fadeAnim, {
-			toValue: 1,
-			duration: 300,
-			useNativeDriver: true,
-		}).start();
+		fadeAnim.value = withTiming(1, { duration: 300 });
 	}, [fadeAnim]);
 
 	return (

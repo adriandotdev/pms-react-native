@@ -1,5 +1,4 @@
 import { useRouter } from "expo-router";
-import React from "react";
 import {
 	Platform,
 	StyleSheet,
@@ -8,6 +7,7 @@ import {
 	View,
 } from "react-native";
 import FadeInView from "../components/animation_providers/FadeInView";
+import SlideUpView from "../components/animation_providers/SlideUpView";
 import LeftArrowIcon from "../components/icons/LeftArrowIcon";
 import SettingsIcon from "../components/icons/SettingsIcon";
 
@@ -24,32 +24,31 @@ const DashboardPage = () => {
 				<SettingsIcon />
 			</View>
 			<View style={styles.cardContainer}>
-				<View style={styles.dashboardCard}>
+				<SlideUpView style={styles.dashboardCard}>
 					<Text style={styles.cardH1}>28</Text>
 					<Text style={styles.cardH2}>Categories</Text>
 					<Text style={styles.cardDate}>as of April 2025</Text>
-				</View>
-				<TouchableOpacity
-					onPress={() => router.push("/dashboard/products/")}
-					style={styles.dashboardCard}
-				>
-					<View>
-						<Text style={styles.cardH1}>207</Text>
-						<Text style={styles.cardH2}>Products</Text>
-						<Text style={styles.cardDate}>as of March 2025</Text>
-					</View>
-				</TouchableOpacity>
+				</SlideUpView>
+				<SlideUpView style={styles.dashboardCard}>
+					<TouchableOpacity onPress={() => router.push("/dashboard/products/")}>
+						<View>
+							<Text style={styles.cardH1}>207</Text>
+							<Text style={styles.cardH2}>Products</Text>
+							<Text style={styles.cardDate}>as of March 2025</Text>
+						</View>
+					</TouchableOpacity>
+				</SlideUpView>
 
-				<View style={styles.dashboardCard}>
+				<SlideUpView style={styles.dashboardCard}>
 					<Text style={styles.cardH1}>4</Text>
 					<Text style={styles.cardH2}>Users</Text>
 					<Text style={styles.cardDate}>as of April 2025</Text>
-				</View>
-				<View style={styles.dashboardCard}>
+				</SlideUpView>
+				<SlideUpView style={styles.dashboardCard}>
 					<Text style={styles.cardH1}>15k</Text>
 					<Text style={styles.cardH2}>Sales</Text>
 					<Text style={styles.cardDate}>as of March 2025</Text>
-				</View>
+				</SlideUpView>
 			</View>
 			<View></View>
 		</FadeInView>

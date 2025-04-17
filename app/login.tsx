@@ -17,7 +17,7 @@ const LoginPage = () => {
 		<FadeInView style={{ ...styles.container }}>
 			<Text style={styles.loginTitle}>Welcome Back</Text>
 
-			<View style={{ gap: 8 }}>
+			<View style={{ gap: 24 }}>
 				<View style={{ gap: 4 }}>
 					<Text style={styles.inputLabel}>Username</Text>
 					<TextInput
