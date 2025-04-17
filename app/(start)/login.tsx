@@ -7,7 +7,7 @@ import {
 	TextInput,
 	View,
 } from "react-native";
-import FadeInView from "./components/animation_providers/FadeInView";
+import FadeInView from "../components/animation_providers/FadeInView";
 
 const LoginPage = () => {
 	const router = useRouter();
@@ -65,11 +65,12 @@ const styles = StyleSheet.create({
 		fontSize: 32,
 		color: "#e8a123",
 		marginBottom: Platform.OS === "ios" ? 16 : 0,
+		textAlign: "center",
 	},
 	inputLabel: {
 		fontFamily: "Archivo-Med",
 		fontSize: 16,
-		color: "#201f1d",
+		color: "#e8a123",
 	},
 	textInput: {
 		height: 50,

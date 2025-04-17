@@ -17,6 +17,7 @@ import FadeInView from "../components/animation_providers/FadeInView";
 import AddIcon from "../components/icons/AddIcon";
 import LeftArrowIcon from "../components/icons/LeftArrowIcon";
 import SettingsIcon from "../components/icons/SettingsIcon";
+import { useModal } from "../context/ModalContext";
 
 interface Category {
 	id: number;
@@ -52,6 +53,8 @@ const Product = ({ item }: { item: Product }) => {
 };
 
 const ProductsPage = () => {
+	const { toggleModal } = useModal();
+
 	const insets = useSafeAreaInsets();
 
 	const router = useRouter();
@@ -60,6 +63,7 @@ const ProductsPage = () => {
 	const [page, setPage] = useState(1);
 	const [loading, setLoading] = useState(false);
 	const [hasMore, setHasMore] = useState(true);
+	const [addModal, setAddModal] = useState(true);
 
 	const isFocused = useIsFocused();
 
@@ -114,6 +118,7 @@ const ProductsPage = () => {
 				}
 			/>
 			<TouchableOpacity
+				onPress={() => toggleModal()}
 				style={{
 					...styles.addButton,
 					bottom: insets.bottom + 15,

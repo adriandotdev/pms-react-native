@@ -1,11 +1,5 @@
 import { useRouter } from "expo-router";
-import {
-	Platform,
-	StyleSheet,
-	Text,
-	TouchableOpacity,
-	View,
-} from "react-native";
+import { Platform, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import FadeInView from "../components/animation_providers/FadeInView";
 import SlideUpView from "../components/animation_providers/SlideUpView";
@@ -32,13 +26,11 @@ const DashboardPage = () => {
 					<Text style={styles.cardDate}>as of April 2025</Text>
 				</SlideUpView>
 				<SlideUpView style={styles.dashboardCard}>
-					<TouchableOpacity onPress={() => router.push("/dashboard/products/")}>
-						<View>
-							<Text style={styles.cardH1}>207</Text>
-							<Text style={styles.cardH2}>Products</Text>
-							<Text style={styles.cardDate}>as of March 2025</Text>
-						</View>
-					</TouchableOpacity>
+					<View>
+						<Text style={styles.cardH1}>207</Text>
+						<Text style={styles.cardH2}>Products</Text>
+						<Text style={styles.cardDate}>as of March 2025</Text>
+					</View>
 				</SlideUpView>
 
 				<SlideUpView style={styles.dashboardCard}>
@@ -52,7 +44,6 @@ const DashboardPage = () => {
 					<Text style={styles.cardDate}>as of March 2025</Text>
 				</SlideUpView>
 			</View>
-			<View></View>
 		</FadeInView>
 	);
 };
