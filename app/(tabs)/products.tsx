@@ -1,7 +1,8 @@
 import { useIsFocused } from "@react-navigation/native";
 import axios from "axios";
 import { useFocusEffect, useRouter } from "expo-router";
-import { useState } from "react";
+import debounce from "lodash/debounce";
+import { useCallback, useEffect, useState } from "react";
 import {
 	ActivityIndicator,
 	FlatList,
@@ -18,13 +19,12 @@ import AddIcon from "../components/icons/AddIcon";
 import LeftArrowIcon from "../components/icons/LeftArrowIcon";
 import SettingsIcon from "../components/icons/SettingsIcon";
 import { useModal } from "../context/ModalContext";
-
 interface Category {
 	id: number;
 	name: string;
 	description: string | null;
-	createdAt: string; // ISO date string
-	products: Product[]; // You can replace `any` with `Product[]` if you want to link back
+	createdAt: string;
+	products: Product[];
 }
 
 interface Product {
@@ -33,9 +33,9 @@ interface Product {
 	price: number;
 	categoryId: number;
 	category: Category;
-	createdAt: string; // ISO date string
+	createdAt: string;
 	description: string | null;
-	expirationDate: string; // ISO date string
+	expirationDate: string;
 }
 
 const Product = ({ item }: { item: Product }) => {
@@ -54,44 +54,76 @@ const Product = ({ item }: { item: Product }) => {
 
 const ProductsPage = () => {
 	const { toggleModal } = useModal();
-
 	const insets = useSafeAreaInsets();
-
 	const router = useRouter();
 	const [products, setProducts] = useState<Product[]>([]);
-
 	const [page, setPage] = useState(1);
 	const [loading, setLoading] = useState(false);
 	const [hasMore, setHasMore] = useState(true);
-	const [addModal, setAddModal] = useState(true);
-
 	const isFocused = useIsFocused();
+	const [search, setSearch] = useState("");
 
-	const fetchData = async () => {
-		if (loading || !hasMore) return;
-
+	const fetchProducts = async (pageNumber: number) => {
 		setLoading(true);
-
-		const response = await axios.get(
-			`https://64ec-149-30-139-139.ngrok-free.app/api/v1/products?pageNumber=${page}`
-		);
-
-		if ((page - 1) * 10 >= response.data.totalProducts) setHasMore(false);
-
-		setProducts((prev) => {
-			const existingIds = new Set(prev.map((p) => p.id));
-			const newProducts = response.data.products.filter(
-				(p: Product) => !existingIds.has(p.id)
+		try {
+			const response = await axios.get(
+				`https://64ec-149-30-139-139.ngrok-free.app/api/v1/products?pageNumber=${pageNumber}&filter=${search}`
 			);
-			return [...prev, ...newProducts];
-		});
-		setPage((prev) => prev + 1);
+
+			const newProducts = response.data.products;
+			if (newProducts.length === 0) {
+				setHasMore(false);
+			} else {
+				setProducts((prev) => {
+					const existingIds = new Set(prev.map((p) => p.id));
+					const filtered = newProducts.filter(
+						(p: Product) => !existingIds.has(p.id)
+					);
+					return pageNumber === 1 ? newProducts : [...prev, ...filtered];
+				});
+			}
+		} catch (err) {
+			console.error(err);
+		}
 		setLoading(false);
 	};
 
-	useFocusEffect(() => {
-		fetchData();
-	});
+	const searchProduct = useCallback(
+		debounce((text: string) => {
+			setSearch(text);
+		}, 300),
+		[]
+	);
+
+	useFocusEffect(
+		useCallback(() => {
+			setPage(1);
+			setHasMore(true);
+			setProducts([]);
+			fetchProducts(1);
+		}, [isFocused])
+	);
+
+	useEffect(() => {
+		if (page > 1) {
+			console.log("effect");
+
+			fetchProducts(page);
+		}
+	}, [page]);
+
+	useEffect(() => {
+		setPage(1);
+		setHasMore(true);
+		setProducts([]);
+		fetchProducts(1);
+	}, [search]);
+
+	const loadMore = () => {
+		if (!loading && hasMore) {
+			setPage((prev) => prev + 1);
+		}
+	};
 
 	return (
 		<FadeInView style={{ ...styles.container }}>
@@ -102,17 +134,21 @@ const ProductsPage = () => {
 				</View>
 				<SettingsIcon />
 			</View>
-			<TextInput placeholder="Search..." style={styles.searchInput} />
+			<TextInput
+				onChangeText={searchProduct}
+				placeholder="Search..."
+				style={styles.searchInput}
+			/>
 			<FlatList
 				contentContainerStyle={{
 					paddingBottom: insets.bottom,
 					paddingHorizontal: 24,
 				}}
-				keyExtractor={(item) => item.id.toString()}
+				keyExtractor={(item) => "item-" + item.id.toString()}
 				onEndReachedThreshold={0.5}
 				data={products}
 				renderItem={Product}
-				onEndReached={fetchData}
+				onEndReached={loadMore}
 				ListFooterComponent={
 					loading ? <ActivityIndicator size="large" /> : null
 				}
@@ -125,9 +161,7 @@ const ProductsPage = () => {
 					right: insets.right + 15,
 				}}
 			>
-				<View>
-					<AddIcon width={24} height={24} color={"#e8a123"} />
-				</View>
+				<AddIcon width={24} height={24} color={"#e8a123"} />
 			</TouchableOpacity>
 		</FadeInView>
 	);
@@ -221,3 +255,20 @@ const styles = StyleSheet.create({
 		elevation: 5,
 	},
 });
+// const fetchData = async () => {
+// 	if (loading || !hasMore) return;
+
+// 	setLoading(true);
+
+// 	if ((page - 1) * 10 >= data.totalProducts) setHasMore(false);
+
+// 	setProducts((prev) => {
+// 		const existingIds = new Set(prev.map((p) => p.id));
+// 		const newProducts = data.products.filter(
+// 			(p: Product) => !existingIds.has(p.id)
+// 		);
+// 		return [...prev, ...newProducts];
+// 	});
+// 	setPage((prev) => prev + 1);
+// 	setLoading(false);
+// };

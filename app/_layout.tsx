@@ -6,6 +6,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { StyleSheet } from "react-native";
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
 	SafeAreaProvider,
 	useSafeAreaInsets,
@@ -13,6 +14,8 @@ import {
 import { ModalProvider } from "./context/ModalContext";
 
 SplashScreen.preventAutoHideAsync();
+
+const queryClient = new QueryClient();
 
 export default function RootLayout() {
 	const insets = useSafeAreaInsets();
@@ -34,11 +37,13 @@ export default function RootLayout() {
 	}
 
 	return (
-		<SafeAreaProvider style={{ ...styles.container, paddingTop: insets.top }}>
-			<ModalProvider>
-				<Slot />
-			</ModalProvider>
-		</SafeAreaProvider>
+		<QueryClientProvider client={queryClient}>
+			<SafeAreaProvider style={{ ...styles.container, paddingTop: insets.top }}>
+				<ModalProvider>
+					<Slot />
+				</ModalProvider>
+			</SafeAreaProvider>
+		</QueryClientProvider>
 	);
 }
 

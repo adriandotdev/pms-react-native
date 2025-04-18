@@ -12,7 +12,7 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 			</TouchableWithoutFeedback>
 
 			<Drawer open={addModal} style={{ ...styles.drawer }}>
-				<Text>Hello</Text>
+				<Text style={styles.modalTitle}>New Product</Text>
 			</Drawer>
 		</View>
 	) : (
@@ -49,5 +49,10 @@ const styles = StyleSheet.create({
 
 		borderTopRightRadius: 24,
 		borderTopLeftRadius: 24,
+	},
+	modalTitle: {
+		fontSize: 24,
+		fontFamily: "Archivo-Exp-Bold",
+		color: "#e8a123",
 	},
 });
