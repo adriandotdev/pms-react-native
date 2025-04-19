@@ -1,18 +1,267 @@
-import { StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import {
+	Platform,
+	Pressable,
+	Modal as RNModal,
+	ScrollView,
+	StyleSheet,
+	Text,
+	TextInput,
+	TouchableOpacity,
+	TouchableWithoutFeedback,
+	View,
+} from "react-native";
+import DropDownPicker from "react-native-dropdown-picker";
 import { useModal } from "../context/ModalContext";
 import Drawer from "./Drawer";
+type FormValues = {
+	name: string;
+	category: string;
+	price: number;
+};
+
+type Category = {
+	id: number;
+	name: string;
+	description: string;
+	createdAt: string;
+};
 
 const Modal = ({ addModal }: { addModal: boolean }) => {
 	const { toggleModal } = useModal();
+	const { isOpen } = useModal();
 
+	const {
+		control,
+		handleSubmit,
+		formState: { errors },
+		setValue,
+		reset,
+	} = useForm<FormValues>({
+		defaultValues: {
+			name: "",
+			price: undefined,
+			category: "banana",
+		},
+	});
+
+	const onSubmit = (data: FormValues) => console.log(data);
+
+	const [open, setOpen] = useState(false);
+
+	const [items, setItems] = useState([
+		{ label: "Apple", value: "apple" },
+		{ label: "Banana", value: "banana" },
+	]);
+
+	const { data } = useQuery({
+		queryKey: ["categories"],
+		queryFn: async () => {
+			const response = await axios.get(
+				"https://accurately-factual-troll.ngrok-free.app/api/v1/categories"
+			);
+
+			return response.data;
+		},
+	});
+
+	useEffect(() => {
+		setOpen(false);
+
+		if (data?.categories) {
+			console.log(data?.categories);
+
+			setValue("category", data?.categories[0].id);
+			setItems(
+				data.categories.map((category: Category) => {
+					return { label: category.name, value: category.id };
+				})
+			);
+		}
+	}, [isOpen]);
+
+	const [date, setDate] = useState(new Date());
+	const [showPicker, setShowPicker] = useState(false);
+	const [expirationDate, setExpirationDate] = useState("");
+
+	const onChange = (event: any, selectedDate?: Date) => {
+		if (Platform.OS === "android") {
+			setShowPicker(false);
+		}
+		if (selectedDate) {
+			setDate(selectedDate);
+			setExpirationDate(selectedDate.toDateString());
+		}
+	};
+
+	const openPicker = () => {
+		setShowPicker(true);
+	};
 	return addModal ? (
 		<View style={styles.overlay}>
-			<TouchableWithoutFeedback onPress={toggleModal}>
+			<TouchableWithoutFeedback
+				onPress={() => {
+					toggleModal();
+					reset();
+				}}
+			>
 				<View style={styles.backdrop} />
 			</TouchableWithoutFeedback>
 
 			<Drawer open={addModal} style={{ ...styles.drawer }}>
-				<Text style={styles.modalTitle}>New Product</Text>
+				<ScrollView style={{ paddingBottom: 24 }} nestedScrollEnabled={true}>
+					<Text style={styles.modalTitle}>New Product</Text>
+
+					<View style={styles.inputContainer}>
+						<Text style={styles.inputLabel}>Name</Text>
+						<Controller
+							control={control}
+							rules={{ required: "Please provide a product name." }}
+							render={({ field: { onChange, onBlur, value } }) => (
+								<TextInput
+									placeholder="Product name"
+									onBlur={onBlur}
+									onChangeText={onChange}
+									value={value}
+									style={{
+										...styles.input,
+										borderColor: errors.name ? "red" : "#e8a123",
+									}}
+								/>
+							)}
+							name="name"
+						/>
+						{errors.name && (
+							<Text style={styles.errorMessage}>{errors.name.message}</Text>
+						)}
+					</View>
+
+					<View style={styles.inputContainer}>
+						<Text style={styles.inputLabel}>Price</Text>
+						<Controller
+							control={control}
+							rules={{ required: "Please provide a product price." }}
+							render={({ field: { onChange, onBlur, value } }) => (
+								<TextInput
+									placeholder="Product price"
+									onBlur={onBlur}
+									onChangeText={onChange}
+									value={value as unknown as string}
+									style={{
+										...styles.input,
+										borderColor: errors.price ? "red" : "#e8a123",
+									}}
+								/>
+							)}
+							name="price"
+						/>
+						{errors.price && (
+							<Text style={styles.errorMessage}>{errors.price.message}</Text>
+						)}
+					</View>
+
+					<View style={styles.inputContainer}>
+						<Text style={styles.inputLabel}>Category</Text>
+						<Controller
+							control={control}
+							render={({ field: { value, onChange } }) => {
+								return (
+									<DropDownPicker
+										open={open}
+										value={value}
+										items={items}
+										setOpen={setOpen}
+										onChangeValue={onChange}
+										setValue={onChange}
+										setItems={setItems}
+										modalAnimationType="fade"
+										listMode="SCROLLVIEW"
+										style={{
+											borderColor: "#e8a123",
+											borderWidth: 0.5,
+											zIndex: 1000,
+										}}
+										dropDownContainerStyle={{
+											borderColor: "#e8a123",
+											borderWidth: 0.5,
+											gap: 16,
+											paddingVertical: 16,
+											backgroundColor: "white",
+											maxHeight: 200,
+										}}
+										dropDownDirection="TOP"
+									/>
+								);
+							}}
+							name="category"
+						/>
+					</View>
+
+					<View style={styles.inputContainer}>
+						<Text style={styles.inputLabel}>Expiration Date</Text>
+						<View>
+							<TouchableOpacity style={styles.inputBox} onPress={openPicker}>
+								<Text>
+									{expirationDate
+										? date.toDateString()
+										: "Set the expiration date (optional)"}
+								</Text>
+							</TouchableOpacity>
+
+							{/* Android: Show directly */}
+							{showPicker && Platform.OS === "android" && (
+								<DateTimePicker
+									value={date}
+									mode="date"
+									display="default"
+									onChange={onChange}
+								/>
+							)}
+
+							{/* iOS: Use a modal */}
+							{showPicker && Platform.OS === "ios" && (
+								<RNModal transparent={true} animationType="slide">
+									<View style={styles.modalContainer}>
+										<View style={styles.pickerWrapper}>
+											<DateTimePicker
+												value={date}
+												mode="date"
+												display="spinner"
+												onChange={onChange}
+												style={{ backgroundColor: "white" }}
+											/>
+											<TouchableOpacity
+												onPress={() => {
+													setShowPicker(false);
+													setExpirationDate(date.toDateString());
+												}}
+												style={styles.doneButton}
+											>
+												<Text style={{ color: "white" }}>Done</Text>
+											</TouchableOpacity>
+										</View>
+									</View>
+								</RNModal>
+							)}
+						</View>
+					</View>
+				</ScrollView>
+				<Pressable
+					style={({ pressed }) => [
+						styles.buttonIdle,
+						{
+							backgroundColor: pressed ? "#111B07" : "#11071B",
+							opacity: pressed ? 50 : 100,
+						},
+					]}
+					onPress={handleSubmit(onSubmit)}
+				>
+					<Text style={styles.buttonText}>Submit</Text>
+				</Pressable>
 			</Drawer>
 		</View>
 	) : (
@@ -42,11 +291,10 @@ const styles = StyleSheet.create({
 	drawer: {
 		paddingRight: 16,
 		paddingLeft: 16,
-		paddingBottom: 24,
+		paddingBottom: Platform.OS === "ios" ? 40 : 24,
 		paddingTop: 24,
-		justifyContent: "space-between",
-		height: 316,
 
+		height: 500,
 		borderTopRightRadius: 24,
 		borderTopLeftRadius: 24,
 	},
@@ -54,5 +302,72 @@ const styles = StyleSheet.create({
 		fontSize: 24,
 		fontFamily: "Archivo-Exp-Bold",
 		color: "#e8a123",
+	},
+	inputContainer: {
+		gap: 4,
+	},
+	input: {
+		height: 50,
+		borderWidth: 0.5,
+		borderRadius: 4,
+		fontFamily: "Archivo-Reg",
+		paddingHorizontal: 10,
+	},
+	inputLabel: {
+		marginTop: 16,
+		gap: 4,
+		fontFamily: "Archivo-Med",
+		color: "#e8a123",
+	},
+	errorMessage: {
+		color: "red",
+		fontFamily: "Archivo-Reg",
+		marginTop: 8,
+	},
+	buttonIdle: {
+		backgroundColor: "#201f1d",
+		paddingHorizontal: 4,
+		paddingVertical: 16,
+		borderRadius: 8,
+		marginTop: 16,
+	},
+	buttonText: {
+		textAlign: "center",
+		fontFamily: "Archivo-Med",
+		fontSize: 16,
+		color: "#f4e3ce",
+	},
+
+	// IOS Date Modal Styles
+	inputBox: {
+		width: "100%",
+
+		backgroundColor: "white",
+		justifyContent: "center",
+		borderWidth: 0.5,
+		borderColor: "#e8a123",
+		borderRadius: 8,
+		alignItems: "center",
+		paddingVertical: 16,
+	},
+	modalContainer: {
+		flex: 1,
+		justifyContent: "flex-end",
+		backgroundColor: "rgba(0,0,0,0.3)",
+	},
+	pickerWrapper: {
+		backgroundColor: "white",
+		padding: 16,
+		borderTopLeftRadius: 16,
+		borderTopRightRadius: 16,
+		maxHeight: 320,
+		height: "100%",
+	},
+	doneButton: {
+		marginTop: 10,
+		padding: 12,
+		backgroundColor: "#e8a123",
+		borderRadius: 8,
+		alignItems: "center",
 	},
 });
