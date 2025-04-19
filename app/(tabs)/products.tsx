@@ -19,6 +19,7 @@ import AddIcon from "../components/icons/AddIcon";
 import LeftArrowIcon from "../components/icons/LeftArrowIcon";
 import SettingsIcon from "../components/icons/SettingsIcon";
 import { useModal } from "../context/ModalContext";
+
 interface Category {
 	id: number;
 	name: string;
@@ -66,8 +67,9 @@ const ProductsPage = () => {
 	const fetchProducts = async (pageNumber: number) => {
 		setLoading(true);
 		try {
+			// @TODO It must be in environment variables
 			const response = await axios.get(
-				`https://64ec-149-30-139-139.ngrok-free.app/api/v1/products?pageNumber=${pageNumber}&filter=${search}`
+				`https://accurately-factual-troll.ngrok-free.app/api/v1/products?pageNumber=${pageNumber}&filter=${search}`
 			);
 
 			const newProducts = response.data.products;
