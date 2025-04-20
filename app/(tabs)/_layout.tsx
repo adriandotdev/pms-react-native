@@ -6,6 +6,7 @@ import DashboardIcon from "../components/icons/DashboardIcon";
 import ProductsIcon from "../components/icons/ProductsIcon";
 import Modal from "../components/Modal";
 import { useModal } from "../context/ModalContext";
+import { PRIMARY_COLOR, SECONDARY_COLOR } from "../utils/constants";
 
 export default function TabLayout() {
 	const { isOpen, alert } = useModal();
@@ -19,13 +20,13 @@ export default function TabLayout() {
 						paddingTop: Platform.OS === "ios" ? 12 : 12,
 						height: Platform.OS === "ios" ? 90 : 80,
 
-						borderColor: "#C48414",
-						borderRightColor: "#C48414",
-						borderLeftColor: "#C48414",
-						borderTopColor: "#C48414",
-						borderTopWidth: 0.5,
-						borderRightWidth: 0.5,
-						borderLeftWidth: 0.5,
+						borderColor: PRIMARY_COLOR,
+						borderRightColor: PRIMARY_COLOR,
+						borderLeftColor: PRIMARY_COLOR,
+						borderTopColor: PRIMARY_COLOR,
+						borderTopWidth: 0.3,
+						borderRightWidth: 0.3,
+						borderLeftWidth: 0.3,
 						borderTopRightRadius: 24,
 						borderTopLeftRadius: 24,
 						...Platform.select({
@@ -60,10 +61,13 @@ export default function TabLayout() {
 									size={size}
 									width={32}
 									height={32}
-									activeColor="#C48414"
-									color={"#e8a123"}
+									activeColor={SECONDARY_COLOR}
+									color={PRIMARY_COLOR}
 								/>
 							);
+						},
+						tabBarLabelStyle: {
+							color: PRIMARY_COLOR,
 						},
 					}}
 				/>
@@ -79,10 +83,13 @@ export default function TabLayout() {
 									size={size}
 									width={32}
 									height={32}
-									activeColor="#C48414"
-									color={"#e8a123"}
+									activeColor={SECONDARY_COLOR}
+									color={PRIMARY_COLOR}
 								/>
 							);
+						},
+						tabBarLabelStyle: {
+							color: PRIMARY_COLOR,
 						},
 					}}
 				/>

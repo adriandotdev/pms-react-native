@@ -5,6 +5,7 @@ import FadeInView from "../components/animation_providers/FadeInView";
 import SlideUpView from "../components/animation_providers/SlideUpView";
 import LeftArrowIcon from "../components/icons/LeftArrowIcon";
 import SettingsIcon from "../components/icons/SettingsIcon";
+import { PRIMARY_COLOR, SECONDARY_COLOR } from "../utils/constants";
 
 const DashboardPage = () => {
 	const router = useRouter();
@@ -71,7 +72,7 @@ const styles = StyleSheet.create({
 	title: {
 		fontFamily: "Archivo-Exp-Bold",
 		fontSize: 24,
-		color: "#e8a123",
+		color: PRIMARY_COLOR,
 		textAlign: "left",
 	},
 	cardContainer: {
@@ -101,11 +102,12 @@ const styles = StyleSheet.create({
 		fontSize: 48,
 		fontFamily: "Archivo-Exp-Bold",
 		textAlign: "left",
-		color: "#e8a123",
+		color: PRIMARY_COLOR,
 	},
 	cardH2: {
 		fontSize: 16,
-		fontFamily: "Archivo-Med",
+		fontFamily: "Archivo-Bold",
+		color: SECONDARY_COLOR,
 	},
 	cardDate: {
 		marginTop: 16,

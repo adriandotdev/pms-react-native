@@ -8,13 +8,14 @@ import {
 	View,
 } from "react-native";
 import FadeInView from "../components/animation_providers/FadeInView";
+import { PRIMARY_COLOR, SECONDARY_COLOR } from "../utils/constants";
 
 const LoginPage = () => {
 	const router = useRouter();
 
 	return (
 		<FadeInView style={{ ...styles.container }}>
-			<Text style={styles.loginTitle}>Welcome Back</Text>
+			<Text style={styles.loginTitle}>Yan-yan's Store</Text>
 
 			<View style={{ gap: 24 }}>
 				<View style={{ gap: 4 }}>
@@ -63,20 +64,20 @@ const styles = StyleSheet.create({
 	loginTitle: {
 		fontFamily: "Archivo-Exp-Bold",
 		fontSize: 32,
-		color: "#e8a123",
+		color: "#201f1d",
 		marginBottom: Platform.OS === "ios" ? 16 : 0,
 		textAlign: "center",
 	},
 	inputLabel: {
 		fontFamily: "Archivo-Med",
 		fontSize: 16,
-		color: "#e8a123",
+		color: PRIMARY_COLOR,
 	},
 	textInput: {
 		height: 50,
-		borderColor: "#e8a123",
-		borderWidth: 1,
-		borderRadius: 4,
+		borderColor: SECONDARY_COLOR,
+		borderWidth: 0.5,
+		borderRadius: 8,
 		fontFamily: "Archivo-Reg",
 		paddingHorizontal: 10,
 	},

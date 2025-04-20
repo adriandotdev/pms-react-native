@@ -24,6 +24,7 @@ export default function RootLayout() {
 		"Archivo-Med": require("../assets/fonts/Archivo-Medium.ttf"),
 		"Archivo-Reg": require("../assets/fonts/Archivo-Regular.ttf"),
 		"Archivo-SemiBold": require("../assets/fonts/Archivo-SemiBold.ttf"),
+		"Archivo-Bold": require("../assets/fonts/Archivo-Bold.ttf"),
 	});
 
 	useEffect(() => {
