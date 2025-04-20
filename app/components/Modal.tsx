@@ -1,9 +1,10 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
+	ActivityIndicator,
 	Platform,
 	Pressable,
 	Modal as RNModal,
@@ -33,7 +34,7 @@ type Category = {
 
 const Modal = ({ addModal }: { addModal: boolean }) => {
 	const { toggleModal } = useModal();
-	const { isOpen } = useModal();
+	const { isOpen, showAlert } = useModal();
 
 	const {
 		control,
@@ -49,7 +50,10 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 		},
 	});
 
-	const onSubmit = (data: FormValues) => console.log(data);
+	const onSubmit = async (data: FormValues) => {
+		console.log(data);
+		await createProduct.mutateAsync(data);
+	};
 
 	const [open, setOpen] = useState(false);
 
@@ -66,6 +70,27 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 			);
 
 			return response.data;
+		},
+	});
+
+	const createProduct = useMutation({
+		mutationFn: async (data: FormValues) => {
+			const response = await axios.post(
+				"https://accurately-factual-troll.ngrok-free.app/api/v1/products",
+				{
+					Name: data.name,
+					Price: data.price,
+					CategoryId: data.category,
+				}
+			);
+		},
+		onSuccess: () => {
+			toggleModal();
+			reset();
+			showAlert("Product created successfully!");
+		},
+		onError: (error) => {
+			console.error("Error creating product:", error);
 		},
 	});
 
@@ -149,12 +174,16 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 								<TextInput
 									placeholder="Product price"
 									onBlur={onBlur}
-									onChangeText={onChange}
+									onChangeText={(text) => {
+										const numericText = text.replace(/[^0-9]/g, "");
+										onChange(numericText);
+									}}
 									value={value as unknown as string}
 									style={{
 										...styles.input,
 										borderColor: errors.price ? "red" : "#e8a123",
 									}}
+									keyboardType="numeric"
 								/>
 							)}
 							name="price"
@@ -251,6 +280,7 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 					</View>
 				</ScrollView>
 				<Pressable
+					disabled={createProduct.isPending}
 					style={({ pressed }) => [
 						styles.buttonIdle,
 						{
@@ -260,7 +290,11 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 					]}
 					onPress={handleSubmit(onSubmit)}
 				>
-					<Text style={styles.buttonText}>Submit</Text>
+					{createProduct.isPending ? (
+						<ActivityIndicator size={16} />
+					) : (
+						<Text style={styles.buttonText}>Submit</Text>
+					)}
 				</Pressable>
 			</Drawer>
 		</View>
