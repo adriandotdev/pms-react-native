@@ -18,6 +18,7 @@ import {
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { useModal } from "../context/ModalContext";
+import { PRIMARY_COLOR } from "../utils/constants";
 import Drawer from "./Drawer";
 type FormValues = {
 	name: string;
@@ -335,7 +336,7 @@ const styles = StyleSheet.create({
 	modalTitle: {
 		fontSize: 24,
 		fontFamily: "Archivo-Exp-Bold",
-		color: "#e8a123",
+		color: PRIMARY_COLOR,
 	},
 	inputContainer: {
 		gap: 4,
@@ -351,7 +352,7 @@ const styles = StyleSheet.create({
 		marginTop: 16,
 		gap: 4,
 		fontFamily: "Archivo-Med",
-		color: "#e8a123",
+		color: PRIMARY_COLOR,
 	},
 	errorMessage: {
 		color: "red",
@@ -400,7 +401,7 @@ const styles = StyleSheet.create({
 	doneButton: {
 		marginTop: 10,
 		padding: 12,
-		backgroundColor: "#e8a123",
+		backgroundColor: PRIMARY_COLOR,
 		borderRadius: 8,
 		alignItems: "center",
 	},

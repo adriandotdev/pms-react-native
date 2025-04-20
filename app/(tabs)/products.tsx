@@ -19,6 +19,8 @@ import AddIcon from "../components/icons/AddIcon";
 import LeftArrowIcon from "../components/icons/LeftArrowIcon";
 import SettingsIcon from "../components/icons/SettingsIcon";
 import { useModal } from "../context/ModalContext";
+import { PRIMARY_COLOR, SECONDARY_COLOR } from "../utils/constants";
+import { formatToCurrency } from "../utils/helper";
 
 interface Category {
 	id: number;
@@ -42,9 +44,9 @@ interface Product {
 const Product = ({ item }: { item: Product }) => {
 	return (
 		<View style={styles.productCard}>
-			<View>
+			<View style={{ gap: 12 }}>
 				<Text style={styles.productName}>{item.name}</Text>
-				<Text style={styles.productPrice}>{item.price}</Text>
+				<Text style={styles.productPrice}>{formatToCurrency(item.price)}</Text>
 			</View>
 			<View style={styles.productBadge}>
 				<Text style={styles.productBadgeText}>{item.category.name}</Text>
@@ -163,7 +165,7 @@ const ProductsPage = () => {
 					right: insets.right + 15,
 				}}
 			>
-				<AddIcon width={24} height={24} color={"#e8a123"} />
+				<AddIcon width={24} height={24} color={PRIMARY_COLOR} />
 			</TouchableOpacity>
 		</FadeInView>
 	);
@@ -193,14 +195,14 @@ const styles = StyleSheet.create({
 	title: {
 		fontFamily: "Archivo-Exp-Bold",
 		fontSize: 24,
-		color: "#e8a123",
+		color: PRIMARY_COLOR,
 		textAlign: "left",
 	},
 	searchInput: {
 		height: 50,
 		borderColor: "#e8a123",
-		borderWidth: 1,
-		borderRadius: 4,
+		borderWidth: 0.5,
+		borderRadius: 8,
 		fontFamily: "Archivo-Reg",
 		paddingHorizontal: 10,
 		marginHorizontal: 24,
@@ -212,34 +214,35 @@ const styles = StyleSheet.create({
 		justifyContent: "space-between",
 		backgroundColor: "#ffffff",
 		borderRadius: 8,
-		borderColor: "#f4e3ce",
-		borderWidth: 1,
+		borderColor: SECONDARY_COLOR,
+		borderWidth: 0.2,
 		marginBottom: 16,
 		gap: 8,
 	},
 	productName: {
-		fontFamily: "Archivo-Med",
-		fontSize: 18,
-		color: "#201f1d",
+		fontFamily: "Archivo-Exp-Bold",
+		fontSize: 16,
+		color: SECONDARY_COLOR,
 	},
 	productPrice: {
 		fontSize: 24,
-		color: "#e8a123",
-		fontFamily: "Archivo-Exp-Bold",
+		color: PRIMARY_COLOR,
+		fontFamily: "Archivo-Bold",
 	},
 	productBadge: {
-		backgroundColor: "#f4e3ce",
+		backgroundColor: PRIMARY_COLOR,
 		padding: 4,
 		paddingHorizontal: 12,
 		borderRadius: 12,
 	},
 	productBadgeText: {
 		fontSize: 12,
+		color: "white",
 	},
 	addButton: {
 		backgroundColor: "white",
-		borderWidth: 1,
-		borderColor: "#e8a123",
+		borderWidth: 0.2,
+		borderColor: PRIMARY_COLOR,
 		position: "absolute",
 		width: 60,
 		borderRadius: "100%",
