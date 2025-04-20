@@ -18,6 +18,7 @@ import {
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { useModal } from "../context/ModalContext";
+import { useProduct } from "../context/ProductContext";
 import { PRIMARY_COLOR } from "../utils/constants";
 import Drawer from "./Drawer";
 type FormValues = {
@@ -36,7 +37,7 @@ type Category = {
 const Modal = ({ addModal }: { addModal: boolean }) => {
 	const { toggleModal } = useModal();
 	const { isOpen, showAlert } = useModal();
-
+	const { reset: resetProductField, fetchProducts } = useProduct();
 	const {
 		control,
 		handleSubmit,
@@ -89,6 +90,8 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 			toggleModal();
 			reset();
 			showAlert("Product created successfully!");
+			resetProductField();
+			fetchProducts(1, "");
 		},
 		onError: (error) => {
 			console.error("Error creating product:", error);

@@ -12,7 +12,7 @@ type ModalContextType = {
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
 
-export const ModalProvider = ({ children }: { children: ReactNode }) => {
+const ModalProvider = ({ children }: { children: ReactNode }) => {
 	const [isOpen, setIsOpen] = useState(false);
 
 	const openModal = () => setIsOpen(true);
@@ -59,3 +59,5 @@ export const useModal = () => {
 	}
 	return context;
 };
+
+export default ModalProvider;
