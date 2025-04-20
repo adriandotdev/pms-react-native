@@ -11,7 +11,8 @@ import {
 	SafeAreaProvider,
 	useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { ModalProvider } from "./context/ModalContext";
+import ModalProvider from "./context/ModalContext";
+import ProductProvider from "./context/ProductContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -40,9 +41,11 @@ export default function RootLayout() {
 	return (
 		<QueryClientProvider client={queryClient}>
 			<SafeAreaProvider style={{ ...styles.container, paddingTop: insets.top }}>
-				<ModalProvider>
-					<Slot />
-				</ModalProvider>
+				<ProductProvider>
+					<ModalProvider>
+						<Slot />
+					</ModalProvider>
+				</ProductProvider>
 			</SafeAreaProvider>
 		</QueryClientProvider>
 	);

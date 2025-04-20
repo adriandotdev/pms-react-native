@@ -1,5 +1,4 @@
 import { useIsFocused } from "@react-navigation/native";
-import axios from "axios";
 import { useFocusEffect, useRouter } from "expo-router";
 import debounce from "lodash/debounce";
 import { useCallback, useEffect, useState } from "react";
@@ -19,6 +18,7 @@ import AddIcon from "../components/icons/AddIcon";
 import LeftArrowIcon from "../components/icons/LeftArrowIcon";
 import SettingsIcon from "../components/icons/SettingsIcon";
 import { useModal } from "../context/ModalContext";
+import { useProduct } from "../context/ProductContext";
 import { PRIMARY_COLOR, SECONDARY_COLOR } from "../utils/constants";
 import { formatToCurrency } from "../utils/helper";
 
@@ -59,38 +59,42 @@ const ProductsPage = () => {
 	const { toggleModal } = useModal();
 	const insets = useSafeAreaInsets();
 	const router = useRouter();
-	const [products, setProducts] = useState<Product[]>([]);
-	const [page, setPage] = useState(1);
-	const [loading, setLoading] = useState(false);
-	const [hasMore, setHasMore] = useState(true);
+	// const [products, setProducts] = useState<Product[]>([]);
+	// const [page, setPage] = useState(1);
+	// const [loading, setLoading] = useState(false);
+	// const [hasMore, setHasMore] = useState(true);
 	const isFocused = useIsFocused();
+	const { fetchProducts, reset, products, loading, hasMore, page, loadMore } =
+		useProduct();
+
+	// Product search
 	const [search, setSearch] = useState("");
 
-	const fetchProducts = async (pageNumber: number) => {
-		setLoading(true);
-		try {
-			// @TODO It must be in environment variables
-			const response = await axios.get(
-				`https://accurately-factual-troll.ngrok-free.app/api/v1/products?pageNumber=${pageNumber}&filter=${search}`
-			);
+	// const fetchProducts = async (pageNumber: number) => {
+	// 	setLoading(true);
+	// 	try {
+	// 		// @TODO It must be in environment variables
+	// 		const response = await axios.get(
+	// 			`https://accurately-factual-troll.ngrok-free.app/api/v1/products?pageNumber=${pageNumber}&filter=${search}`
+	// 		);
 
-			const newProducts = response.data.products;
-			if (newProducts.length === 0) {
-				setHasMore(false);
-			} else {
-				setProducts((prev) => {
-					const existingIds = new Set(prev.map((p) => p.id));
-					const filtered = newProducts.filter(
-						(p: Product) => !existingIds.has(p.id)
-					);
-					return pageNumber === 1 ? newProducts : [...prev, ...filtered];
-				});
-			}
-		} catch (err) {
-			console.error(err);
-		}
-		setLoading(false);
-	};
+	// 		const newProducts = response.data.products;
+	// 		if (newProducts.length === 0) {
+	// 			setHasMore(false);
+	// 		} else {
+	// 			setProducts((prev) => {
+	// 				const existingIds = new Set(prev.map((p) => p.id));
+	// 				const filtered = newProducts.filter(
+	// 					(p: Product) => !existingIds.has(p.id)
+	// 				);
+	// 				return pageNumber === 1 ? newProducts : [...prev, ...filtered];
+	// 			});
+	// 		}
+	// 	} catch (err) {
+	// 		console.error(err);
+	// 	}
+	// 	setLoading(false);
+	// };
 
 	const searchProduct = useCallback(
 		debounce((text: string) => {
@@ -101,10 +105,8 @@ const ProductsPage = () => {
 
 	useFocusEffect(
 		useCallback(() => {
-			setPage(1);
-			setHasMore(true);
-			setProducts([]);
-			fetchProducts(1);
+			reset();
+			fetchProducts(1, "");
 		}, [isFocused])
 	);
 
@@ -112,22 +114,22 @@ const ProductsPage = () => {
 		if (page > 1) {
 			console.log("effect");
 
-			fetchProducts(page);
+			fetchProducts(page, "");
 		}
 	}, [page]);
 
 	useEffect(() => {
-		setPage(1);
-		setHasMore(true);
-		setProducts([]);
-		fetchProducts(1);
+		reset();
+		fetchProducts(1, search);
 	}, [search]);
 
-	const loadMore = () => {
-		if (!loading && hasMore) {
-			setPage((prev) => prev + 1);
-		}
-	};
+	// const loadMore = () => {
+	// 	console.log("load more");
+
+	// 	if (!loading && hasMore) {
+	// 		setPage((prev) => prev + 1);
+	// 	}
+	// };
 
 	return (
 		<FadeInView style={{ ...styles.container }}>
