@@ -5,6 +5,9 @@ type ModalContextType = {
 	openModal: () => void;
 	closeModal: () => void;
 	toggleModal: () => void;
+	alert: { show: boolean; message: string };
+	showAlert: (message: string) => void;
+	hideAlert: () => void;
 };
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
@@ -16,9 +19,33 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
 	const closeModal = () => setIsOpen(false);
 	const toggleModal = () => setIsOpen((prev) => !prev);
 
+	const [alert, setAlert] = useState({
+		show: false,
+		message: "",
+	});
+
+	const showAlert = (message: string) => {
+		setAlert({ show: true, message });
+		setTimeout(() => {
+			hideAlert();
+		}, 3000);
+	};
+
+	const hideAlert = () => {
+		setAlert({ show: false, message: "" });
+	};
+
 	return (
 		<ModalContext.Provider
-			value={{ isOpen, openModal, closeModal, toggleModal }}
+			value={{
+				isOpen,
+				openModal,
+				closeModal,
+				toggleModal,
+				alert,
+				showAlert,
+				hideAlert,
+			}}
 		>
 			{children}
 		</ModalContext.Provider>
