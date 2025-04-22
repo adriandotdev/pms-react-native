@@ -44,6 +44,7 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 		formState: { errors },
 		setValue,
 		reset,
+		resetField,
 	} = useForm<FormValues>({
 		defaultValues: {
 			name: "",
@@ -64,7 +65,7 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 		{ label: "Banana", value: "banana" },
 	]);
 
-	const { data } = useQuery({
+	const { data, refetch: refetchCategories } = useQuery({
 		queryKey: ["categories"],
 		queryFn: async () => {
 			const response = await axios.get(
@@ -87,8 +88,9 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 			);
 		},
 		onSuccess: () => {
-			toggleModal();
 			reset();
+			refetchCategories();
+			resetField("category", data?.categories[0].id);
 			showAlert("Product created successfully!");
 			resetProductField();
 			fetchProducts(1, "");
@@ -111,7 +113,7 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 				})
 			);
 		}
-	}, [isOpen]);
+	}, [isOpen, data]);
 
 	const [date, setDate] = useState(new Date());
 	const [showPicker, setShowPicker] = useState(false);
@@ -153,7 +155,8 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 							rules={{ required: "Please provide a product name." }}
 							render={({ field: { onChange, onBlur, value } }) => (
 								<TextInput
-									placeholder="Product name"
+									autoCapitalize="none"
+									placeholder="Ex. Coca-cola"
 									onBlur={onBlur}
 									onChangeText={onChange}
 									value={value}
@@ -177,7 +180,7 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 							rules={{ required: "Please provide a product price." }}
 							render={({ field: { onChange, onBlur, value } }) => (
 								<TextInput
-									placeholder="Product price"
+									placeholder="Ex. 10"
 									onBlur={onBlur}
 									onChangeText={(text) => {
 										const numericText = text.replace(/[^0-9]/g, "");
@@ -223,9 +226,9 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 											borderColor: "#e8a123",
 											borderWidth: 0.5,
 											gap: 16,
-											paddingVertical: 16,
+											paddingBottom: 32,
 											backgroundColor: "white",
-											maxHeight: 200,
+											maxHeight: 300,
 										}}
 										dropDownDirection="TOP"
 									/>
@@ -333,7 +336,7 @@ const styles = StyleSheet.create({
 		paddingBottom: Platform.OS === "ios" ? 40 : 24,
 		paddingTop: 24,
 
-		height: 500,
+		height: Platform.OS === "ios" ? 500 : 550,
 		borderTopRightRadius: 24,
 		borderTopLeftRadius: 24,
 	},
