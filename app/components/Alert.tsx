@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
-import Animated, { SlideInUp, SlideOutUp } from "react-native-reanimated";
+import Animated, { Easing, FadeInUp, FadeOutUp } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useModal } from "../context/ModalContext";
 
@@ -17,8 +17,8 @@ const Alert = ({ show }: AlertProps) => {
 				<View style={{ ...styles.overlay, top: insets.top }}>
 					<Animated.View
 						style={styles.alert}
-						entering={SlideInUp}
-						exiting={SlideOutUp}
+						entering={FadeInUp.duration(200).easing(Easing.ease)}
+						exiting={FadeOutUp.duration(200).easing(Easing.ease)}
 					>
 						<Text style={styles.alertMessage}>{alert.message}</Text>
 					</Animated.View>
@@ -36,14 +36,11 @@ const styles = StyleSheet.create({
 		flexDirection: "column",
 		justifyContent: "flex-start",
 		alignItems: "center",
-		// backgroundColor: "rgba(0,0,0,0.5)",
 		position: "absolute",
 		paddingTop: 48,
-
-		bottom: 0,
 		left: 0,
 		right: 0,
-		zIndex: 100,
+		zIndex: 30,
 	},
 	alert: {
 		zIndex: 100,

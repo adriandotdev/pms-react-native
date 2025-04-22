@@ -1,10 +1,4 @@
-import {
-	Pressable,
-	StyleSheet,
-	Text,
-	TouchableOpacity,
-	View,
-} from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import Animated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useModal } from "../context/ModalContext";
@@ -23,10 +17,10 @@ const ActionModal = ({ show }: ActionModalProps) => {
 		<>
 			{show && (
 				<FadeInView style={{ ...styles.overlay, paddingTop: insets.top }}>
-					<TouchableOpacity
+					<Pressable
 						style={styles.backdrop}
 						onPress={hideActionModal}
-					></TouchableOpacity>
+					></Pressable>
 
 					<SlideUpView delay={200}>
 						<Text style={styles.title}>Actions</Text>
