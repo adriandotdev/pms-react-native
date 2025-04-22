@@ -136,6 +136,7 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 				onPress={() => {
 					toggleModal();
 					reset();
+					setExpirationDate("");
 				}}
 			>
 				<View style={styles.backdrop} />
