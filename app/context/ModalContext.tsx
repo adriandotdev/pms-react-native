@@ -8,6 +8,9 @@ type ModalContextType = {
 	alert: { show: boolean; message: string };
 	showAlert: (message: string) => void;
 	hideAlert: () => void;
+	showActionModal: () => void;
+	hideActionModal: () => void;
+	actionModal: boolean;
 };
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
@@ -24,6 +27,8 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
 		message: "",
 	});
 
+	const [actionModal, setActionModal] = useState(false);
+
 	const showAlert = (message: string) => {
 		setAlert({ show: true, message });
 		setTimeout(() => {
@@ -33,6 +38,14 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
 
 	const hideAlert = () => {
 		setAlert({ show: false, message: "" });
+	};
+
+	const showActionModal = () => {
+		setActionModal(true);
+	};
+
+	const hideActionModal = () => {
+		setActionModal(false);
 	};
 
 	return (
@@ -45,6 +58,9 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
 				alert,
 				showAlert,
 				hideAlert,
+				showActionModal,
+				hideActionModal,
+				actionModal,
 			}}
 		>
 			{children}

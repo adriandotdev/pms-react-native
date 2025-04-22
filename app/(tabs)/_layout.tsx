@@ -1,6 +1,7 @@
 // app/(tabs)/_layout.tsx
 import { Tabs } from "expo-router";
 import { Platform } from "react-native";
+import ActionModal from "../components/ActionModal";
 import Alert from "../components/Alert";
 import DashboardIcon from "../components/icons/DashboardIcon";
 import ProductsIcon from "../components/icons/ProductsIcon";
@@ -9,7 +10,7 @@ import { useModal } from "../context/ModalContext";
 import { PRIMARY_COLOR, SECONDARY_COLOR } from "../utils/constants";
 
 export default function TabLayout() {
-	const { isOpen, alert } = useModal();
+	const { isOpen, alert, actionModal } = useModal();
 
 	return (
 		<>
@@ -96,6 +97,7 @@ export default function TabLayout() {
 			</Tabs>
 			<Modal addModal={isOpen} />
 			<Alert show={alert.show} />
+			<ActionModal show={actionModal} />
 		</>
 	);
 }

@@ -21,12 +21,12 @@ const DashboardPage = () => {
 				<SettingsIcon />
 			</View>
 			<View style={styles.cardContainer}>
-				<SlideUpView style={styles.dashboardCard}>
+				<SlideUpView delay={200} style={styles.dashboardCard}>
 					<Text style={styles.cardH1}>28</Text>
 					<Text style={styles.cardH2}>Categories</Text>
 					<Text style={styles.cardDate}>as of April 2025</Text>
 				</SlideUpView>
-				<SlideUpView style={styles.dashboardCard}>
+				<SlideUpView delay={350} style={styles.dashboardCard}>
 					<View>
 						<Text style={styles.cardH1}>207</Text>
 						<Text style={styles.cardH2}>Products</Text>
@@ -34,12 +34,12 @@ const DashboardPage = () => {
 					</View>
 				</SlideUpView>
 
-				<SlideUpView style={styles.dashboardCard}>
+				<SlideUpView delay={400} style={styles.dashboardCard}>
 					<Text style={styles.cardH1}>4</Text>
 					<Text style={styles.cardH2}>Users</Text>
 					<Text style={styles.cardDate}>as of April 2025</Text>
 				</SlideUpView>
-				<SlideUpView style={styles.dashboardCard}>
+				<SlideUpView delay={450} style={styles.dashboardCard}>
 					<Text style={styles.cardH1}>15k</Text>
 					<Text style={styles.cardH2}>Sales</Text>
 					<Text style={styles.cardDate}>as of March 2025</Text>
