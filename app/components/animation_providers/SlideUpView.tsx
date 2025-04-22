@@ -3,20 +3,33 @@ import { ViewStyle } from "react-native";
 import Animated, {
 	useAnimatedStyle,
 	useSharedValue,
+	withDelay,
 	withSpring,
 } from "react-native-reanimated";
 
-type SlideUpViewProps = PropsWithChildren<{ style?: ViewStyle }>;
+type AnimationProp = {
+	delay?: number;
+};
+type SlideUpViewProps = PropsWithChildren<{ style?: ViewStyle }> &
+	AnimationProp;
 
 const SlideUpView: React.FC<SlideUpViewProps> = (props) => {
 	const translateY = useSharedValue(100); // Start from bottom
+	const opacity = useSharedValue(0); // Start from transparent
 
 	useEffect(() => {
-		translateY.value = withSpring(0); // Animate to top (translateY: 0)
+		translateY.value = withDelay(props.delay ?? 0, withSpring(0));
+		opacity.value = withDelay(props.delay ?? 0, withSpring(1)); // Fade in
+
+		return () => {
+			translateY.value = withSpring(100); // Reset to bottom
+			opacity.value = withSpring(0); // Reset to transparent
+		};
 	}, []);
 
 	const animatedStyles = useAnimatedStyle(() => ({
 		transform: [{ translateY: translateY.value }],
+		opacity: opacity.value,
 	}));
 
 	return (

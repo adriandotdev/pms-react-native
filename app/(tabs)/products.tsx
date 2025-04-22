@@ -44,8 +44,20 @@ interface Product {
 }
 
 const Product = ({ item }: { item: Product }) => {
+	const { showActionModal } = useModal();
+
+	const [lastPress, setLastPress] = useState(0);
+
+	const handlePress = () => {
+		const currentTime = new Date().getTime();
+
+		if (currentTime - lastPress <= 300) showActionModal();
+
+		setLastPress(currentTime);
+	};
+
 	return (
-		<Pressable onLongPress={() => console.log(item)} delayLongPress={300}>
+		<Pressable onPress={handlePress} delayLongPress={45}>
 			<View style={styles.productCard}>
 				<View style={{ gap: 12 }}>
 					<Text style={styles.productName}>{item.name}</Text>
@@ -121,7 +133,7 @@ const ProductsPage = () => {
 				keyExtractor={(item) => "item-" + item.id.toString()}
 				onEndReachedThreshold={0.5}
 				data={products}
-				renderItem={Product}
+				renderItem={({ item }) => <Product item={item} />}
 				onEndReached={loadMore}
 				ListFooterComponent={
 					loading ? <ActivityIndicator size="large" /> : null
@@ -163,6 +175,7 @@ const styles = StyleSheet.create({
 		height: "100%",
 		backgroundColor: "white",
 	},
+
 	header: {
 		flexDirection: "row",
 		alignItems: "center",
