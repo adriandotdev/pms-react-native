@@ -82,7 +82,6 @@ const ProductsPage = () => {
 		useProduct();
 	const searchInputRef = useRef<TextInput>(null);
 
-	// Product search
 	const [search, setSearch] = useState("");
 
 	const searchProduct = useCallback(
@@ -94,14 +93,12 @@ const ProductsPage = () => {
 
 	useFocusEffect(
 		useCallback(() => {
-			console.log("focus");
 			reset();
 			fetchProducts(1, undefined);
 		}, [isFocused])
 	);
 
 	useEffect(() => {
-		console.log("wow 2");
 		fetchProducts(page, search);
 	}, [page, search]);
 
@@ -154,7 +151,7 @@ const ProductsPage = () => {
 				onPress={() => toggleModal()}
 				style={{
 					...styles.addButton,
-					bottom: insets.bottom + 15,
+					bottom: insets.bottom + (Platform.OS === "ios" ? -15 : 15),
 					right: insets.right + 15,
 				}}
 			>
