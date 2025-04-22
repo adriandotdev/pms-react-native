@@ -1,11 +1,13 @@
 import { useIsFocused } from "@react-navigation/native";
 import { useFocusEffect, useRouter } from "expo-router";
 import debounce from "lodash/debounce";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
 	ActivityIndicator,
 	FlatList,
 	Platform,
+	Pressable,
+	RefreshControl,
 	StyleSheet,
 	Text,
 	TextInput,
@@ -43,15 +45,19 @@ interface Product {
 
 const Product = ({ item }: { item: Product }) => {
 	return (
-		<View style={styles.productCard}>
-			<View style={{ gap: 12 }}>
-				<Text style={styles.productName}>{item.name}</Text>
-				<Text style={styles.productPrice}>{formatToCurrency(item.price)}</Text>
+		<Pressable onLongPress={() => console.log(item)} delayLongPress={300}>
+			<View style={styles.productCard}>
+				<View style={{ gap: 12 }}>
+					<Text style={styles.productName}>{item.name}</Text>
+					<Text style={styles.productPrice}>
+						{formatToCurrency(item.price)}
+					</Text>
+				</View>
+				<View style={styles.productBadge}>
+					<Text style={styles.productBadgeText}>{item.category.name}</Text>
+				</View>
 			</View>
-			<View style={styles.productBadge}>
-				<Text style={styles.productBadgeText}>{item.category.name}</Text>
-			</View>
-		</View>
+		</Pressable>
 	);
 };
 
@@ -62,6 +68,7 @@ const ProductsPage = () => {
 	const isFocused = useIsFocused();
 	const { fetchProducts, reset, products, loading, hasMore, page, loadMore } =
 		useProduct();
+	const searchInputRef = useRef<TextInput>(null);
 
 	// Product search
 	const [search, setSearch] = useState("");
@@ -75,22 +82,19 @@ const ProductsPage = () => {
 
 	useFocusEffect(
 		useCallback(() => {
+			console.log("focus");
 			reset();
-			fetchProducts(1, "");
+			fetchProducts(1, undefined);
 		}, [isFocused])
 	);
 
 	useEffect(() => {
-		if (page > 1) {
-			console.log("effect");
-
-			fetchProducts(page, "");
-		}
-	}, [page]);
+		console.log("wow 2");
+		fetchProducts(page, search);
+	}, [page, search]);
 
 	useEffect(() => {
 		reset();
-		fetchProducts(1, search);
 	}, [search]);
 
 	return (
@@ -103,6 +107,8 @@ const ProductsPage = () => {
 				<SettingsIcon />
 			</View>
 			<TextInput
+				autoCapitalize="none"
+				ref={searchInputRef}
 				onChangeText={searchProduct}
 				placeholder="Search..."
 				style={styles.searchInput}
@@ -119,6 +125,17 @@ const ProductsPage = () => {
 				onEndReached={loadMore}
 				ListFooterComponent={
 					loading ? <ActivityIndicator size="large" /> : null
+				}
+				refreshControl={
+					<RefreshControl
+						refreshing={loading}
+						onRefresh={() => {
+							searchInputRef.current?.clear();
+							setSearch("");
+							reset();
+							fetchProducts(1, "");
+						}}
+					/>
 				}
 			/>
 			<TouchableOpacity
