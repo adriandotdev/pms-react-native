@@ -1,15 +1,26 @@
 import { useRouter } from "expo-router";
+import { useEffect } from "react";
 import { Platform, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import FadeInView from "../components/animation_providers/FadeInView";
 import SlideUpView from "../components/animation_providers/SlideUpView";
 import LeftArrowIcon from "../components/icons/LeftArrowIcon";
 import SettingsIcon from "../components/icons/SettingsIcon";
+import { useAuthStore } from "../store";
 import { PRIMARY_COLOR, SECONDARY_COLOR } from "../utils/constants";
 
 const DashboardPage = () => {
 	const router = useRouter();
 	const insets = useSafeAreaInsets();
+	const session = useAuthStore((state) => state.session);
+
+	useEffect(() => {
+		console.log("effect dash");
+		if (!session) {
+			console.log("session");
+			router.replace("login");
+		}
+	}, []);
 
 	return (
 		<FadeInView style={styles.container}>
