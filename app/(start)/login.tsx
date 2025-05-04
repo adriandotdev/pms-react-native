@@ -1,4 +1,7 @@
+import axios, { AxiosError } from "axios";
 import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import {
 	Platform,
 	Pressable,
@@ -8,34 +11,124 @@ import {
 	View,
 } from "react-native";
 import FadeInView from "../components/animation_providers/FadeInView";
+import { useAuthStore } from "../store";
 import { PRIMARY_COLOR, SECONDARY_COLOR } from "../utils/constants";
+
+type FormValues = {
+	username: string;
+	password: string;
+};
 
 const LoginPage = () => {
 	const router = useRouter();
+
+	const session = useAuthStore((state) => state.session);
+	const setSession = useAuthStore((state) => state.setSession);
+	const setRefreshToken = useAuthStore((state) => state.setRefreshToken);
+
+	const [error, setError] = useState("");
+
+	const {
+		control,
+		handleSubmit,
+		formState: { errors },
+		setValue,
+		reset,
+		resetField,
+	} = useForm<FormValues>({
+		defaultValues: {
+			username: "",
+			password: "",
+		},
+	});
+
+	const onSubmit = async (data: FormValues) => {
+		try {
+			const response = await axios.post(
+				"https://accurately-factual-troll.ngrok-free.app/api/v1/auth/login",
+				{ username: data.username, password: data.password }
+			);
+			setSession(response.data.accessToken);
+			setRefreshToken(response.data.refreshToken);
+			router.push("/dashboard");
+		} catch (error) {
+			const requestError = error as AxiosError;
+
+			const response = requestError.response?.data as { message: string };
+
+			setError(
+				response.message ?? "Internal Server Error. Please contact a support."
+			);
+		}
+	};
+
+	useEffect(() => {
+		if (session) return router.replace("/dashboard");
+	}, []);
 
 	return (
 		<FadeInView style={{ ...styles.container }}>
 			<Text style={styles.loginTitle}>Yan-yan's Store</Text>
 
 			<View style={{ gap: 24 }}>
-				<View style={{ gap: 4 }}>
+				<View style={styles.inputContainer}>
 					<Text style={styles.inputLabel}>Username</Text>
-					<TextInput
-						style={styles.textInput}
-						placeholder="Enter your username here"
+					<Controller
+						control={control}
+						rules={{ required: "Please provide your username." }}
+						render={({ field: { onChange, onBlur, value } }) => (
+							<TextInput
+								autoCapitalize="none"
+								placeholder="Enter your usernane here"
+								onBlur={onBlur}
+								onChangeText={(text) => {
+									onChange(text);
+									setError("");
+								}}
+								value={value as unknown as string}
+								style={{
+									...styles.input,
+									borderColor: errors.username ? "red" : "#e8a123",
+								}}
+							/>
+						)}
+						name="username"
 					/>
+					{errors.username && (
+						<Text style={styles.errorMessage}>{errors.username.message}</Text>
+					)}
 				</View>
 
-				<View style={{ gap: 4 }}>
+				<View style={styles.inputContainer}>
 					<Text style={styles.inputLabel}>Password</Text>
-					<TextInput
-						style={styles.textInput}
-						placeholder="Enter your password here"
+					<Controller
+						control={control}
+						rules={{ required: "Please provide your password." }}
+						render={({ field: { onChange, onBlur, value } }) => (
+							<TextInput
+								autoCapitalize="none"
+								placeholder="Enter your password here"
+								onBlur={onBlur}
+								onChangeText={(text) => {
+									onChange(text);
+									setError("");
+								}}
+								value={value as unknown as string}
+								style={{
+									...styles.input,
+									borderColor: errors.password ? "red" : "#e8a123",
+								}}
+							/>
+						)}
+						name="password"
 					/>
+					{errors.password && (
+						<Text style={styles.errorMessage}>{errors.password.message}</Text>
+					)}
 				</View>
 			</View>
 			<Pressable
-				onPress={() => router.push("/dashboard")}
+				onPress={handleSubmit(onSubmit)}
 				style={({ pressed }) => [
 					styles.buttonIdle,
 					{
@@ -46,6 +139,22 @@ const LoginPage = () => {
 			>
 				<Text style={styles.buttonText}>Sign In</Text>
 			</Pressable>
+			{error && (
+				<View
+					style={{
+						backgroundColor: "#B94F46",
+						justifyContent: "center",
+						alignItems: "center",
+						padding: 20,
+						marginTop: 20,
+						borderRadius: 8,
+					}}
+				>
+					<Text style={{ color: "white", fontFamily: "Archivo-Bold" }}>
+						{error}
+					</Text>
+				</View>
+			)}
 		</FadeInView>
 	);
 };
@@ -60,6 +169,16 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 24,
 		width: "100%",
 		gap: 5,
+	},
+	inputContainer: {
+		gap: 4,
+	},
+	input: {
+		height: 50,
+		borderWidth: 0.5,
+		borderRadius: 4,
+		fontFamily: "Archivo-Reg",
+		paddingHorizontal: 10,
 	},
 	loginTitle: {
 		fontFamily: "Archivo-Exp-Bold",
@@ -80,6 +199,11 @@ const styles = StyleSheet.create({
 		borderRadius: 8,
 		fontFamily: "Archivo-Reg",
 		paddingHorizontal: 10,
+	},
+	errorMessage: {
+		color: "red",
+		fontFamily: "Archivo-Reg",
+		marginTop: 8,
 	},
 	buttonIdle: {
 		backgroundColor: "#201f1d",

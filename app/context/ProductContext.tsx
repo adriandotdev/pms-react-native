@@ -1,5 +1,6 @@
 import axios from "axios";
 import { createContext, useContext, useState } from "react";
+import { useAuthStore } from "../store";
 
 type ProductContextType = {
 	fetchProducts: (pageNumber: number, search?: string) => void;
@@ -37,6 +38,7 @@ const ProductProvider = ({ children }: { children: React.ReactNode }) => {
 	const [loading, setLoading] = useState(false);
 	const [hasMore, setHasMore] = useState(true);
 	const [page, setPage] = useState(1);
+	const session = useAuthStore((state) => state.session);
 
 	const fetchProducts = async (pageNumber: number, search?: string) => {
 		setLoading(true);
@@ -47,7 +49,11 @@ const ProductProvider = ({ children }: { children: React.ReactNode }) => {
 			// @TODO It must be in environment variables
 			console.log("url", url);
 
-			const response = await axios.get(url);
+			const response = await axios.get(url, {
+				headers: {
+					Authorization: `Bearer ${session}`,
+				},
+			});
 
 			const newProducts = response.data.products;
 
