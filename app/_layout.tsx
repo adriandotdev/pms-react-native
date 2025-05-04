@@ -11,6 +11,7 @@ import {
 	SafeAreaProvider,
 	useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import PrivateRoute from "./components/PrivateRoute";
 import ModalProvider from "./context/ModalContext";
 import ProductProvider from "./context/ProductContext";
 
@@ -43,7 +44,9 @@ export default function RootLayout() {
 			<SafeAreaProvider style={{ ...styles.container, paddingTop: insets.top }}>
 				<ProductProvider>
 					<ModalProvider>
-						<Slot />
+						<PrivateRoute>
+							<Slot />
+						</PrivateRoute>
 					</ModalProvider>
 				</ProductProvider>
 			</SafeAreaProvider>
