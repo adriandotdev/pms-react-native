@@ -4,12 +4,14 @@ import { Platform, StyleSheet, Text, View } from "react-native";
 import FadeInView from "../components/animation_providers/FadeInView";
 import SlideUpView from "../components/animation_providers/SlideUpView";
 import SettingsIcon from "../components/icons/SettingsIcon";
+import { useModal } from "../context/ModalContext";
 import { useAuthStore } from "../store";
 import { PRIMARY_COLOR, SECONDARY_COLOR } from "../utils/constants";
 
 const DashboardPage = () => {
 	const router = useRouter();
 	const session = useAuthStore((state) => state.session);
+	const { showLogoutModal } = useModal();
 
 	useEffect(() => {
 		if (!session) {
@@ -23,7 +25,7 @@ const DashboardPage = () => {
 				<View style={{ flexDirection: "row", alignItems: "center", gap: 16 }}>
 					<Text style={styles.title}>Dashboard</Text>
 				</View>
-				<SettingsIcon />
+				<SettingsIcon onPress={showLogoutModal} />
 			</View>
 			<View style={styles.cardContainer}>
 				<SlideUpView delay={200} style={styles.dashboardCard}>
