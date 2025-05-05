@@ -19,6 +19,7 @@ import {
 import DropDownPicker from "react-native-dropdown-picker";
 import { useModal } from "../context/ModalContext";
 import { useProduct } from "../context/ProductContext";
+import { useAuthStore } from "../store";
 import { PRIMARY_COLOR } from "../utils/constants";
 import Drawer from "./Drawer";
 type FormValues = {
@@ -35,6 +36,7 @@ type Category = {
 };
 
 const Modal = ({ addModal }: { addModal: boolean }) => {
+	const session = useAuthStore((session) => session.session);
 	const { toggleModal } = useModal();
 	const { isOpen, showAlert } = useModal();
 	const { reset: resetProductField, fetchProducts } = useProduct();
@@ -69,7 +71,12 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 		queryKey: ["categories"],
 		queryFn: async () => {
 			const response = await axios.get(
-				"https://accurately-factual-troll.ngrok-free.app/api/v1/categories"
+				"https://accurately-factual-troll.ngrok-free.app/api/v1/categories",
+				{
+					headers: {
+						Authorization: `Bearer ${session}`,
+					},
+				}
 			);
 
 			return response.data;
@@ -84,6 +91,11 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 					Name: data.name,
 					Price: data.price,
 					CategoryId: data.category,
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${session}`,
+					},
 				}
 			);
 		},

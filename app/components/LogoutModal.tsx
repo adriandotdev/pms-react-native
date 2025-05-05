@@ -42,7 +42,7 @@ const LogoutModal = ({ show }: { show: boolean }) => {
 								onPress={handleLogout}
 								style={{ ...styles.buttonIdle, backgroundColor: "#B94F46" }}
 							>
-								<Text style={{ ...styles.buttonText, color: "#f4e3ce" }}>
+								<Text style={{ ...styles.buttonText, color: "white" }}>
 									Logout
 								</Text>
 							</TouchableOpacity>
