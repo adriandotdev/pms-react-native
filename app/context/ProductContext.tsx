@@ -47,7 +47,7 @@ const ProductProvider = ({ children }: { children: React.ReactNode }) => {
 	const fetchProducts = async (pageNumber: number, search?: string) => {
 		setLoading(true);
 		try {
-			let url = `https://accurately-factual-troll.ngrok-free.app/api/v1/products?pageNumber=${pageNumber}`;
+			let url = `${process.env.EXPO_PUBLIC_API_URL}/api/v1/products?pageNumber=${pageNumber}`;
 
 			if (search) url += `&filter=${search}`;
 			// @TODO It must be in environment variables

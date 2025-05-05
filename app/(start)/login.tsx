@@ -46,7 +46,7 @@ const LoginPage = () => {
 	const onSubmit = async (data: FormValues) => {
 		try {
 			const response = await axios.post(
-				"https://accurately-factual-troll.ngrok-free.app/api/v1/auth/login",
+				`${process.env.EXPO_PUBLIC_API_URL}/api/v1/auth/login`,
 				{ username: data.username, password: data.password }
 			);
 			setSession(response.data.accessToken);

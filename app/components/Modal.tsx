@@ -71,7 +71,7 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 		queryKey: ["categories"],
 		queryFn: async () => {
 			const response = await axios.get(
-				"https://accurately-factual-troll.ngrok-free.app/api/v1/categories",
+				`${process.env.EXPO_PUBLIC_API_URL}/api/v1/categories`,
 				{
 					headers: {
 						Authorization: `Bearer ${session}`,
@@ -86,7 +86,7 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 	const createProduct = useMutation({
 		mutationFn: async (data: FormValues) => {
 			const response = await axios.post(
-				"https://accurately-factual-troll.ngrok-free.app/api/v1/products",
+				`${process.env.EXPO_PUBLIC_API_URL}/api/v1/products`,
 				{
 					Name: data.name,
 					Price: data.price,
