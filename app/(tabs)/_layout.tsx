@@ -5,12 +5,13 @@ import ActionModal from "../components/ActionModal";
 import Alert from "../components/Alert";
 import DashboardIcon from "../components/icons/DashboardIcon";
 import ProductsIcon from "../components/icons/ProductsIcon";
+import LogoutModal from "../components/LogoutModal";
 import Modal from "../components/Modal";
 import { useModal } from "../context/ModalContext";
 import { PRIMARY_COLOR, SECONDARY_COLOR } from "../utils/constants";
 
 export default function TabLayout() {
-	const { isOpen, alert, actionModal } = useModal();
+	const { logoutModal, isOpen, alert, actionModal } = useModal();
 
 	return (
 		<>
@@ -98,6 +99,7 @@ export default function TabLayout() {
 			<Modal addModal={isOpen} />
 			<Alert show={alert.show} />
 			<ActionModal show={actionModal} />
+			<LogoutModal show={logoutModal} />
 		</>
 	);
 }

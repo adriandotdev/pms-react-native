@@ -11,12 +11,16 @@ type ModalContextType = {
 	showActionModal: () => void;
 	hideActionModal: () => void;
 	actionModal: boolean;
+	logoutModal: boolean;
+	showLogoutModal: () => void;
+	hideLogoutModal: () => void;
 };
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
 
 const ModalProvider = ({ children }: { children: ReactNode }) => {
 	const [isOpen, setIsOpen] = useState(false);
+	const [logoutModal, setLogoutModal] = useState(false);
 
 	const openModal = () => setIsOpen(true);
 	const closeModal = () => setIsOpen(false);
@@ -48,6 +52,14 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
 		setActionModal(false);
 	};
 
+	const showLogoutModal = () => {
+		setLogoutModal(true);
+	};
+
+	const hideLogoutModal = () => {
+		setLogoutModal(false);
+	};
+
 	return (
 		<ModalContext.Provider
 			value={{
@@ -61,6 +73,9 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
 				showActionModal,
 				hideActionModal,
 				actionModal,
+				logoutModal,
+				showLogoutModal,
+				hideLogoutModal,
 			}}
 		>
 			{children}

@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+import { useRouter } from "expo-router";
 import { createContext, useContext, useState } from "react";
 import { useAuthStore } from "../store";
 
@@ -39,6 +40,9 @@ const ProductProvider = ({ children }: { children: React.ReactNode }) => {
 	const [hasMore, setHasMore] = useState(true);
 	const [page, setPage] = useState(1);
 	const session = useAuthStore((state) => state.session);
+	const setSession = useAuthStore((state) => state.setSession);
+	const setRefreshToken = useAuthStore((state) => state.setRefreshToken);
+	const router = useRouter();
 
 	const fetchProducts = async (pageNumber: number, search?: string) => {
 		setLoading(true);
@@ -69,7 +73,13 @@ const ProductProvider = ({ children }: { children: React.ReactNode }) => {
 				});
 			}
 		} catch (err) {
-			console.error(err);
+			if (err instanceof AxiosError) {
+				if (err.response?.status === 401) {
+					setSession("");
+					setRefreshToken("");
+					router.replace("/login");
+				}
+			}
 		}
 		setLoading(false);
 	};
