@@ -25,9 +25,9 @@ export default function TabLayout() {
 						borderRightColor: PRIMARY_COLOR,
 						borderLeftColor: PRIMARY_COLOR,
 						borderTopColor: PRIMARY_COLOR,
-						borderTopWidth: 0.3,
-						borderRightWidth: 0.3,
-						borderLeftWidth: 0.3,
+						borderTopWidth: 0.09,
+						borderRightWidth: 0.09,
+						borderLeftWidth: 0.09,
 						borderTopRightRadius: 24,
 						borderTopLeftRadius: 24,
 						...Platform.select({
