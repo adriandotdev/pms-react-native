@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
+	ActivityIndicator,
 	Platform,
 	Pressable,
 	StyleSheet,
@@ -31,7 +32,7 @@ const LoginPage = () => {
 	const {
 		control,
 		handleSubmit,
-		formState: { errors },
+		formState: { errors, isSubmitting },
 		setValue,
 		reset,
 		resetField,
@@ -52,13 +53,13 @@ const LoginPage = () => {
 			setRefreshToken(response.data.refreshToken);
 			router.push("/dashboard");
 		} catch (error) {
-			const requestError = error as AxiosError;
-
-			const response = requestError.response?.data as { message: string };
-
-			setError(
-				response.message ?? "Internal Server Error. Please contact a support."
-			);
+			if (error instanceof AxiosError) {
+				if (error.response?.status === 404 || error.response?.status === 401) {
+					setError("Invalid credentials");
+				}
+			} else {
+				setError((error as Error).message);
+			}
 		}
 	};
 
@@ -129,6 +130,7 @@ const LoginPage = () => {
 				</View>
 			</View>
 			<Pressable
+				disabled={isSubmitting}
 				onPress={handleSubmit(onSubmit)}
 				style={({ pressed }) => [
 					styles.buttonIdle,
@@ -138,7 +140,11 @@ const LoginPage = () => {
 					},
 				]}
 			>
-				<Text style={styles.buttonText}>Sign In</Text>
+				{isSubmitting ? (
+					<ActivityIndicator size={16} />
+				) : (
+					<Text style={styles.buttonText}>Sign In</Text>
+				)}
 			</Pressable>
 			{error && (
 				<View
