@@ -118,6 +118,7 @@ const LoginPage = () => {
 									...styles.input,
 									borderColor: errors.password ? "red" : "#e8a123",
 								}}
+								secureTextEntry={true}
 							/>
 						)}
 						name="password"
