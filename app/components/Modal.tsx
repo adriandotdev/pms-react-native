@@ -18,15 +18,10 @@ import {
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { useModal } from "../context/ModalContext";
-import { useProduct } from "../context/ProductContext";
+import { CreateProductType, useProduct } from "../context/ProductContext";
 import { useAuthStore } from "../store";
 import { PRIMARY_COLOR } from "../utils/constants";
 import Drawer from "./Drawer";
-type FormValues = {
-	name: string;
-	category: string;
-	price: number;
-};
 
 type Category = {
 	id: number;
@@ -39,7 +34,11 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 	const session = useAuthStore((session) => session.session);
 	const { toggleModal } = useModal();
 	const { isOpen, showAlert } = useModal();
-	const { reset: resetProductField, fetchProducts } = useProduct();
+	const {
+		reset: resetProductField,
+		fetchProducts,
+		createProduct,
+	} = useProduct();
 	const {
 		control,
 		handleSubmit,
@@ -47,7 +46,7 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 		setValue,
 		reset,
 		resetField,
-	} = useForm<FormValues>({
+	} = useForm<CreateProductType>({
 		defaultValues: {
 			name: "",
 			price: undefined,
@@ -55,9 +54,9 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 		},
 	});
 
-	const onSubmit = async (data: FormValues) => {
+	const onSubmit = async (data: CreateProductType) => {
 		console.log(data);
-		await createProduct.mutateAsync(data);
+		await createNewProduct.mutateAsync(data);
 	};
 
 	const [open, setOpen] = useState(false);
@@ -83,22 +82,8 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 		},
 	});
 
-	const createProduct = useMutation({
-		mutationFn: async (data: FormValues) => {
-			await axios.post(
-				`${process.env.EXPO_PUBLIC_API_URL}/api/v1/products`,
-				{
-					Name: data.name,
-					Price: data.price,
-					CategoryId: data.category,
-				},
-				{
-					headers: {
-						Authorization: `Bearer ${session}`,
-					},
-				}
-			);
-		},
+	const createNewProduct = useMutation({
+		mutationFn: async (data: CreateProductType) => createProduct(data),
 		onSuccess: () => {
 			reset();
 			refetchCategories();
@@ -300,7 +285,7 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 					</View>
 				</ScrollView>
 				<Pressable
-					disabled={createProduct.isPending}
+					disabled={createNewProduct.isPending}
 					style={({ pressed }) => [
 						styles.buttonIdle,
 						{
@@ -310,7 +295,7 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 					]}
 					onPress={handleSubmit(onSubmit)}
 				>
-					{createProduct.isPending ? (
+					{createNewProduct.isPending ? (
 						<ActivityIndicator size={16} />
 					) : (
 						<Text style={styles.buttonText}>Submit</Text>

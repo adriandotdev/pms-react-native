@@ -3,8 +3,15 @@ import { useRouter } from "expo-router";
 import { createContext, useContext, useState } from "react";
 import { useAuthStore } from "../store";
 
-type ProductContextType = {
+export type CreateProductType = {
+	name: string;
+	category: string;
+	price: number;
+};
+
+export type ProductContextType = {
 	fetchProducts: (pageNumber: number, search?: string) => void;
+	createProduct: (data: CreateProductType) => void;
 	products: Product[];
 	page: number;
 	loading: boolean;
@@ -13,7 +20,7 @@ type ProductContextType = {
 	hasMore: boolean;
 };
 
-interface Category {
+export interface Category {
 	id: number;
 	name: string;
 	description: string | null;
@@ -21,7 +28,7 @@ interface Category {
 	products: Product[];
 }
 
-interface Product {
+export interface Product {
 	id: number;
 	name: string;
 	price: number;
@@ -84,6 +91,22 @@ const ProductProvider = ({ children }: { children: React.ReactNode }) => {
 		setLoading(false);
 	};
 
+	const createProduct = async (data: CreateProductType) => {
+		await axios.post(
+			`${process.env.EXPO_PUBLIC_API_URL}/api/v1/products`,
+			{
+				Name: data.name,
+				Price: data.price,
+				CategoryId: data.category,
+			},
+			{
+				headers: {
+					Authorization: `Bearer ${session}`,
+				},
+			}
+		);
+	};
+
 	const reset = () => {
 		setPage(1);
 		setHasMore(true);
@@ -101,6 +124,7 @@ const ProductProvider = ({ children }: { children: React.ReactNode }) => {
 			value={{
 				products,
 				fetchProducts,
+				createProduct,
 				reset,
 				loadMore,
 				page,
