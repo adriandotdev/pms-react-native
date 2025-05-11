@@ -1,42 +1,39 @@
 {
-  "expo": {
-    "scheme": "reactnativeapp",
-    "name": "react-native-practice",
-    "slug": "react-native-practice",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "package": "com.httpsdotjs.yayanstorepms"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
-    "plugins": [
-      "expo-router",
-      "expo-font"
-    ],
-    "extra": {
-      "router": {
-        "origin": false
-      },
-      "eas": {
-        "projectId": "fcc008da-f027-4b4e-8599-e07b7cb0b3e9"
-      }
-    }
-  }
+	"expo": {
+		"scheme": "reactnativeapp",
+		"name": "Yan-yan's Store: PMS",
+		"slug": "react-native-practice",
+		"version": "1.0.0",
+		"orientation": "portrait",
+		"icon": "./assets/img/app-logo-removebg-preview.png",
+		"userInterfaceStyle": "light",
+		"newArchEnabled": true,
+		"splash": {
+			"image": "./assets/img/app-logo-removebg-preview.png",
+			"resizeMode": "contain",
+			"backgroundColor": "#ffffff"
+		},
+		"ios": {
+			"supportsTablet": true
+		},
+		"android": {
+			"adaptiveIcon": {
+				"foregroundImage": "./assets/img/app-logo-removebg-preview.png",
+				"backgroundColor": "#ffffff"
+			},
+			"package": "com.httpsdotjs.yayanstorepms"
+		},
+		"web": {
+			"favicon": "./assets/favicon.png"
+		},
+		"plugins": ["expo-router", "expo-font"],
+		"extra": {
+			"router": {
+				"origin": false
+			},
+			"eas": {
+				"projectId": "fcc008da-f027-4b4e-8599-e07b7cb0b3e9"
+			}
+		}
+	}
 }

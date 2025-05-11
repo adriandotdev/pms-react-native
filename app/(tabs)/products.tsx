@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
 	},
 	productCard: {
 		padding: 16,
-		flexDirection: "row",
+		flexDirection: "column",
 		alignItems: "flex-start",
 		justifyContent: "space-between",
 		backgroundColor: "#ffffff",
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
 		borderColor: SECONDARY_COLOR,
 		borderWidth: 0.2,
 		marginBottom: 16,
-		gap: 8,
+		gap: 16,
 	},
 	productName: {
 		fontFamily: "Archivo-Exp-Bold",

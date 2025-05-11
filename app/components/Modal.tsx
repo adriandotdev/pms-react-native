@@ -85,7 +85,7 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 
 	const createProduct = useMutation({
 		mutationFn: async (data: FormValues) => {
-			const response = await axios.post(
+			await axios.post(
 				`${process.env.EXPO_PUBLIC_API_URL}/api/v1/products`,
 				{
 					Name: data.name,
