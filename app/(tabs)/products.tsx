@@ -24,6 +24,8 @@ import { useProduct } from "../context/ProductContext";
 import { PRIMARY_COLOR, SECONDARY_COLOR } from "../utils/constants";
 import { formatToCurrency } from "../utils/helper";
 
+import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
+
 interface Category {
 	id: number;
 	name: string;
@@ -42,6 +44,37 @@ interface Product {
 	description: string | null;
 	expirationDate: string;
 }
+
+const LeftActions = () => (
+	<View style={styles.leftAction}>
+		<Pressable
+			style={{
+				backgroundColor: "#236AE8",
+				width: 100,
+				height: "100%",
+				display: "flex",
+				justifyContent: "center",
+				alignItems: "center",
+			}}
+		>
+			<Text style={styles.actionText}>Update</Text>
+		</Pressable>
+		<Pressable
+			style={{
+				backgroundColor: "#E83F23",
+				width: 100,
+				height: "100%",
+				display: "flex",
+				justifyContent: "center",
+				alignItems: "center",
+				borderTopRightRadius: 8,
+				borderBottomRightRadius: 8,
+			}}
+		>
+			<Text style={styles.actionText}>Delete</Text>
+		</Pressable>
+	</View>
+);
 
 const Product = ({ item }: { item: Product }) => {
 	const { showActionModal } = useModal();
@@ -130,7 +163,11 @@ const ProductsPage = () => {
 				keyExtractor={(item) => "item-" + item.id.toString()}
 				onEndReachedThreshold={0.5}
 				data={products}
-				renderItem={({ item }) => <Product item={item} />}
+				renderItem={({ item }) => (
+					<Swipeable renderRightActions={LeftActions}>
+						<Product item={item} />
+					</Swipeable>
+				)}
 				onEndReached={loadMore}
 				ListFooterComponent={
 					loading ? <ActivityIndicator size="large" /> : null
@@ -249,6 +286,23 @@ const styles = StyleSheet.create({
 		shadowOpacity: 0.2,
 		shadowRadius: 4,
 		elevation: 5,
+	},
+	leftAction: {
+		justifyContent: "center",
+		display: "flex",
+		flexDirection: "row",
+		alignItems: "center",
+		paddingHorizontal: 10,
+		width: 200,
+		height: "auto",
+		marginBottom: 16,
+		borderRadius: 8,
+	},
+	actionText: {
+		color: "#fff",
+		fontWeight: "600",
+		fontFamily: "Archivo-Bold",
+		textAlign: "center",
 	},
 });
 // const fetchData = async () => {

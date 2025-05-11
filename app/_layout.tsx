@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { StyleSheet } from "react-native";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {
 	SafeAreaProvider,
 	useSafeAreaInsets,
@@ -45,7 +46,9 @@ export default function RootLayout() {
 				<ProductProvider>
 					<ModalProvider>
 						<PrivateRoute>
-							<Slot />
+							<GestureHandlerRootView>
+								<Slot />
+							</GestureHandlerRootView>
 						</PrivateRoute>
 					</ModalProvider>
 				</ProductProvider>
