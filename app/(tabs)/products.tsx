@@ -52,14 +52,19 @@ const LeftActions = ({ product }: { product: Product }) => {
 	return (
 		<View style={styles.leftAction}>
 			<Pressable
-				style={{
-					backgroundColor: "#236AE8",
-					width: 100,
-					height: "100%",
-					display: "flex",
-					justifyContent: "center",
-					alignItems: "center",
-				}}
+				style={({ pressed }) => [
+					{
+						backgroundColor: "#236AE8",
+						width: 100,
+						height: "100%",
+						display: "flex",
+						justifyContent: "center",
+						alignItems: "center",
+					},
+					{
+						backgroundColor: pressed ? "#1452C1" : "#236AE8",
+					},
+				]}
 			>
 				<Text style={styles.actionText}>Update</Text>
 			</Pressable>
@@ -68,16 +73,21 @@ const LeftActions = ({ product }: { product: Product }) => {
 					showSheet("delete");
 					setProductToDelete(product);
 				}}
-				style={{
-					backgroundColor: "#E83F23",
-					width: 100,
-					height: "100%",
-					display: "flex",
-					justifyContent: "center",
-					alignItems: "center",
-					borderTopRightRadius: 8,
-					borderBottomRightRadius: 8,
-				}}
+				style={({ pressed }) => [
+					{
+						backgroundColor: "#E83F23",
+						width: 100,
+						height: "100%",
+						display: "flex",
+						justifyContent: "center",
+						alignItems: "center",
+						borderTopRightRadius: 8,
+						borderBottomRightRadius: 8,
+					},
+					{
+						backgroundColor: pressed ? "#B92B13" : "#E83F23",
+					},
+				]}
 			>
 				<Text style={styles.actionText}>Delete</Text>
 			</Pressable>
