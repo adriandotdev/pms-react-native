@@ -212,8 +212,8 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 										onChangeValue={onChange}
 										setValue={onChange}
 										setItems={setItems}
-										modalAnimationType="fade"
-										listMode="SCROLLVIEW"
+										modalAnimationType="slide"
+										listMode="MODAL"
 										style={{
 											borderColor: "#e8a123",
 											borderWidth: 0.5,
@@ -223,9 +223,10 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 											borderColor: "#e8a123",
 											borderWidth: 0.5,
 											gap: 16,
-											paddingBottom: 32,
+											paddingBottom: 2,
 											backgroundColor: "white",
-											maxHeight: 300,
+											maxHeight: "auto",
+											zIndex: 999,
 										}}
 										dropDownDirection="TOP"
 									/>
