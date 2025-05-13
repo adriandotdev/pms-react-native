@@ -7,12 +7,12 @@ import {
 	TouchableWithoutFeedback,
 	View,
 } from "react-native";
-import { useModal } from "../context/ModalContext";
+import { ModalType, useModal } from "../context/ModalContext";
 import { useAuthStore } from "../store";
 import Drawer from "./Drawer";
 
-const LogoutModal = ({ show }: { show: boolean }) => {
-	const { hideLogoutModal } = useModal();
+const Sheet = ({ show, type }: { show: boolean; type?: ModalType }) => {
+	const { hideSheet } = useModal();
 	const setSession = useAuthStore((state) => state.setSession);
 	const setRefreshToken = useAuthStore((state) => state.setRefreshToken);
 	const router = useRouter();
@@ -20,20 +20,16 @@ const LogoutModal = ({ show }: { show: boolean }) => {
 	const handleLogout = () => {
 		setSession("");
 		setRefreshToken("");
-		hideLogoutModal();
+		hideSheet("logout");
 
 		router.replace("/login");
 	};
 
-	return (
-		<>
-			{show && (
-				<View style={styles.overlay}>
-					<TouchableWithoutFeedback onPress={hideLogoutModal}>
-						<View style={styles.backdrop} />
-					</TouchableWithoutFeedback>
-
-					<Drawer open={show} style={{ ...styles.drawer }}>
+	const renderModalContent = () => {
+		switch (type) {
+			case "logout":
+				return (
+					<>
 						<Text style={styles.logoutMessage}>
 							Are you sure you want to logout?
 						</Text>
@@ -47,12 +43,26 @@ const LogoutModal = ({ show }: { show: boolean }) => {
 								</Text>
 							</TouchableOpacity>
 							<TouchableOpacity
-								onPress={hideLogoutModal}
+								onPress={() => hideSheet("logout")}
 								style={{ ...styles.buttonIdle, backgroundColor: "" }}
 							>
 								<Text style={styles.buttonText}>Cancel</Text>
 							</TouchableOpacity>
 						</View>
+					</>
+				);
+		}
+	};
+	return (
+		<>
+			{show && (
+				<View style={styles.overlay}>
+					<TouchableWithoutFeedback onPress={() => hideSheet(type!)}>
+						<View style={styles.backdrop} />
+					</TouchableWithoutFeedback>
+
+					<Drawer open={show} style={{ ...styles.drawer }}>
+						{renderModalContent()}
 					</Drawer>
 				</View>
 			)}
@@ -60,7 +70,7 @@ const LogoutModal = ({ show }: { show: boolean }) => {
 	);
 };
 
-export default LogoutModal;
+export default Sheet;
 
 const styles = StyleSheet.create({
 	overlay: {

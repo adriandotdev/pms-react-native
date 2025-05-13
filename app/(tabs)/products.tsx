@@ -107,7 +107,7 @@ const Product = ({ item }: { item: Product }) => {
 };
 
 const ProductsPage = () => {
-	const { toggleModal, showLogoutModal } = useModal();
+	const { toggleModal, showSheet } = useModal();
 	const insets = useSafeAreaInsets();
 	const router = useRouter();
 	const isFocused = useIsFocused();
@@ -146,7 +146,7 @@ const ProductsPage = () => {
 					<LeftArrowIcon onPress={() => router.back()} />
 					<Text style={styles.title}>Products</Text>
 				</View>
-				<SettingsIcon onPress={showLogoutModal} />
+				<SettingsIcon onPress={() => showSheet("logout")} />
 			</View>
 			<TextInput
 				autoCapitalize="none"

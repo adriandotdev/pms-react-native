@@ -11,7 +11,7 @@ import { PRIMARY_COLOR, SECONDARY_COLOR } from "../utils/constants";
 const DashboardPage = () => {
 	const router = useRouter();
 	const session = useAuthStore((state) => state.session);
-	const { showLogoutModal } = useModal();
+	const { showSheet } = useModal();
 
 	useEffect(() => {
 		if (!session) {
@@ -25,7 +25,7 @@ const DashboardPage = () => {
 				<View style={{ flexDirection: "row", alignItems: "center", gap: 16 }}>
 					<Text style={styles.title}>Dashboard</Text>
 				</View>
-				<SettingsIcon onPress={showLogoutModal} />
+				<SettingsIcon onPress={() => showSheet("logout")} />
 			</View>
 			<View style={styles.cardContainer}>
 				<SlideUpView delay={200} style={styles.dashboardCard}>

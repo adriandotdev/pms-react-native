@@ -1,5 +1,7 @@
 import { createContext, ReactNode, useContext, useState } from "react";
 
+export type ModalType = "logout" | "delete";
+
 type ModalContextType = {
 	isOpen: boolean;
 	openModal: () => void;
@@ -11,16 +13,19 @@ type ModalContextType = {
 	showActionModal: () => void;
 	hideActionModal: () => void;
 	actionModal: boolean;
-	logoutModal: boolean;
-	showLogoutModal: () => void;
-	hideLogoutModal: () => void;
+	sheet: { type: ModalType; show: boolean };
+	showSheet: (type: ModalType) => void;
+	hideSheet: (type: ModalType) => void;
 };
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
 
 const ModalProvider = ({ children }: { children: ReactNode }) => {
 	const [isOpen, setIsOpen] = useState(false);
-	const [logoutModal, setLogoutModal] = useState(false);
+	const [sheet, setSheet] = useState<{ type: ModalType; show: boolean }>({
+		type: "logout",
+		show: false,
+	});
 
 	const openModal = () => setIsOpen(true);
 	const closeModal = () => setIsOpen(false);
@@ -52,12 +57,12 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
 		setActionModal(false);
 	};
 
-	const showLogoutModal = () => {
-		setLogoutModal(true);
+	const showSheet = (type: ModalType) => {
+		setSheet({ type, show: true });
 	};
 
-	const hideLogoutModal = () => {
-		setLogoutModal(false);
+	const hideSheet = (type: ModalType) => {
+		setSheet({ type, show: false });
 	};
 
 	return (
@@ -73,9 +78,9 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
 				showActionModal,
 				hideActionModal,
 				actionModal,
-				logoutModal,
-				showLogoutModal,
-				hideLogoutModal,
+				sheet,
+				showSheet,
+				hideSheet,
 			}}
 		>
 			{children}
