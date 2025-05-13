@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Platform, StyleSheet, Text, View } from "react-native";
 import Animated, { Easing, FadeInUp, FadeOutUp } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useModal } from "../context/ModalContext";
@@ -11,10 +11,13 @@ const Alert = ({ show }: AlertProps) => {
 	const insets = useSafeAreaInsets();
 	const { alert } = useModal();
 
+	const computeTopPosition = () =>
+		Platform.OS === "android" ? insets.top : insets.top - 40;
+
 	return (
 		<>
 			{show && (
-				<View style={{ ...styles.overlay, top: insets.top }}>
+				<View style={{ ...styles.overlay, top: computeTopPosition() }}>
 					<Animated.View
 						style={styles.alert}
 						entering={FadeInUp.duration(200).easing(Easing.ease)}
