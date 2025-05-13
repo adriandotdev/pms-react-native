@@ -1,5 +1,7 @@
+import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import {
+	ActivityIndicator,
 	Platform,
 	StyleSheet,
 	Text,
@@ -8,11 +10,15 @@ import {
 	View,
 } from "react-native";
 import { ModalType, useModal } from "../context/ModalContext";
+import { useProduct } from "../context/ProductContext";
 import { useAuthStore } from "../store";
 import Drawer from "./Drawer";
 
 const Sheet = ({ show, type }: { show: boolean; type?: ModalType }) => {
-	const { hideSheet } = useModal();
+	// hooks
+	const { hideSheet, showAlert } = useModal();
+	const { productToDelete, removeProduct, fetchProducts, reset } = useProduct();
+
 	const setSession = useAuthStore((state) => state.setSession);
 	const setRefreshToken = useAuthStore((state) => state.setRefreshToken);
 	const router = useRouter();
@@ -24,6 +30,16 @@ const Sheet = ({ show, type }: { show: boolean; type?: ModalType }) => {
 
 		router.replace("/login");
 	};
+
+	const deleteProduct = useMutation({
+		mutationFn: async () => removeProduct(),
+		onSuccess: () => {
+			showAlert("Product successfully deleted!");
+			reset();
+			fetchProducts(1, undefined);
+			hideSheet("delete");
+		},
+	});
 
 	const renderModalContent = () => {
 		switch (type) {
@@ -51,6 +67,49 @@ const Sheet = ({ show, type }: { show: boolean; type?: ModalType }) => {
 						</View>
 					</>
 				);
+			case "delete":
+				return (
+					<>
+						<View>
+							<Text style={styles.deleteMessage}>
+								Are you sure you want to remove this product?
+							</Text>
+							<Text style={styles.productToDelete}>
+								{productToDelete?.name}
+							</Text>
+						</View>
+						<View>
+							<TouchableOpacity
+								onPress={async () => {
+									try {
+										await deleteProduct.mutateAsync();
+									} catch (err) {
+										console.log(err);
+									}
+								}}
+								style={{ ...styles.buttonIdle, backgroundColor: "#B94F46" }}
+							>
+								{
+									<>
+										{deleteProduct.isPending ? (
+											<ActivityIndicator size={16} />
+										) : (
+											<Text style={{ ...styles.buttonText, color: "white" }}>
+												Yes, remove this product
+											</Text>
+										)}
+									</>
+								}
+							</TouchableOpacity>
+							<TouchableOpacity
+								onPress={() => hideSheet("delete")}
+								style={{ ...styles.buttonIdle, backgroundColor: "" }}
+							>
+								<Text style={styles.buttonText}>Cancel</Text>
+							</TouchableOpacity>
+						</View>
+					</>
+				);
 		}
 	};
 	return (
@@ -61,7 +120,10 @@ const Sheet = ({ show, type }: { show: boolean; type?: ModalType }) => {
 						<View style={styles.backdrop} />
 					</TouchableWithoutFeedback>
 
-					<Drawer open={show} style={{ ...styles.drawer }}>
+					<Drawer
+						open={show}
+						style={{ ...styles.drawer, height: type === "delete" ? 320 : 280 }}
+					>
 						{renderModalContent()}
 					</Drawer>
 				</View>
@@ -115,5 +177,17 @@ const styles = StyleSheet.create({
 		textAlign: "center",
 		fontFamily: "Archivo-Med",
 		fontSize: 16,
+	},
+
+	deleteMessage: {
+		fontFamily: "Archivo-Exp-Bold",
+		fontSize: 18,
+		lineHeight: 30,
+	},
+	productToDelete: {
+		color: "#E83F23",
+		fontSize: 24,
+		fontFamily: "Archivo-Exp-Bold",
+		marginTop: 12,
 	},
 });

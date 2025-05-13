@@ -45,36 +45,55 @@ interface Product {
 	expirationDate: string;
 }
 
-const LeftActions = () => (
-	<View style={styles.leftAction}>
-		<Pressable
-			style={{
-				backgroundColor: "#236AE8",
-				width: 100,
-				height: "100%",
-				display: "flex",
-				justifyContent: "center",
-				alignItems: "center",
-			}}
-		>
-			<Text style={styles.actionText}>Update</Text>
-		</Pressable>
-		<Pressable
-			style={{
-				backgroundColor: "#E83F23",
-				width: 100,
-				height: "100%",
-				display: "flex",
-				justifyContent: "center",
-				alignItems: "center",
-				borderTopRightRadius: 8,
-				borderBottomRightRadius: 8,
-			}}
-		>
-			<Text style={styles.actionText}>Delete</Text>
-		</Pressable>
-	</View>
-);
+const LeftActions = ({ product }: { product: Product }) => {
+	const { showSheet } = useModal();
+	const { setProductToDelete } = useProduct();
+
+	return (
+		<View style={styles.leftAction}>
+			<Pressable
+				style={({ pressed }) => [
+					{
+						backgroundColor: "#236AE8",
+						width: 100,
+						height: "100%",
+						display: "flex",
+						justifyContent: "center",
+						alignItems: "center",
+					},
+					{
+						backgroundColor: pressed ? "#1452C1" : "#236AE8",
+					},
+				]}
+			>
+				<Text style={styles.actionText}>Update</Text>
+			</Pressable>
+			<Pressable
+				onPress={() => {
+					showSheet("delete");
+					setProductToDelete(product);
+				}}
+				style={({ pressed }) => [
+					{
+						backgroundColor: "#E83F23",
+						width: 100,
+						height: "100%",
+						display: "flex",
+						justifyContent: "center",
+						alignItems: "center",
+						borderTopRightRadius: 8,
+						borderBottomRightRadius: 8,
+					},
+					{
+						backgroundColor: pressed ? "#B92B13" : "#E83F23",
+					},
+				]}
+			>
+				<Text style={styles.actionText}>Delete</Text>
+			</Pressable>
+		</View>
+	);
+};
 
 const Product = ({ item }: { item: Product }) => {
 	const { showActionModal } = useModal();
@@ -164,7 +183,7 @@ const ProductsPage = () => {
 				onEndReachedThreshold={0.5}
 				data={products}
 				renderItem={({ item }) => (
-					<Swipeable renderRightActions={LeftActions}>
+					<Swipeable renderRightActions={() => <LeftActions product={item} />}>
 						<Product item={item} />
 					</Swipeable>
 				)}
