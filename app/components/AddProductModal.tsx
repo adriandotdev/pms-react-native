@@ -30,14 +30,17 @@ type Category = {
 	createdAt: string;
 };
 
-const Modal = ({ addModal }: { addModal: boolean }) => {
+const AddProductModal = ({ addModal }: { addModal: boolean }) => {
 	const session = useAuthStore((session) => session.session);
 	const { toggleModal } = useModal();
-	const { isOpen, showAlert } = useModal();
+	const { isOpen, showAlert, closeModal } = useModal();
 	const {
 		reset: resetProductField,
 		fetchProducts,
 		createProduct,
+		productToUpdate,
+		setProductToUpdate,
+		updateProduct,
 	} = useProduct();
 	const {
 		control,
@@ -55,8 +58,9 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 	});
 
 	const onSubmit = async (data: CreateProductType) => {
-		console.log(data);
-		await createNewProduct.mutateAsync(data);
+		if (productToUpdate)
+			await updateProductById.mutateAsync({ id: productToUpdate.id!, data });
+		else await createNewProduct.mutateAsync(data);
 	};
 
 	const [open, setOpen] = useState(false);
@@ -82,6 +86,20 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 		},
 	});
 
+	const updateProductById = useMutation({
+		mutationFn: async ({ id, data }: { id: number; data: CreateProductType }) =>
+			updateProduct(id, data),
+		onSuccess: () => {
+			reset();
+			refetchCategories();
+			resetField("category", data?.categories[0].id);
+			showAlert("Product updated successfuly!");
+			resetProductField();
+			fetchProducts(1, "");
+			closeModal();
+		},
+	});
+
 	const createNewProduct = useMutation({
 		mutationFn: async (data: CreateProductType) => createProduct(data),
 		onSuccess: () => {
@@ -97,6 +115,7 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 		},
 	});
 
+	// When isOpen & data state changes
 	useEffect(() => {
 		setOpen(false);
 
@@ -111,6 +130,13 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 			);
 		}
 	}, [isOpen, data]);
+
+	// When productToUpdate state changes
+	useEffect(() => {
+		setValue("name", productToUpdate?.name!);
+		setValue("price", Number(productToUpdate?.price));
+		setValue("category", productToUpdate?.categoryId as unknown as string);
+	}, [productToUpdate]);
 
 	const [date, setDate] = useState(new Date());
 	const [showPicker, setShowPicker] = useState(false);
@@ -129,6 +155,7 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 	const openPicker = () => {
 		setShowPicker(true);
 	};
+
 	return addModal ? (
 		<View style={styles.overlay}>
 			<TouchableWithoutFeedback
@@ -136,6 +163,7 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 					toggleModal();
 					reset();
 					setExpirationDate("");
+					setProductToUpdate(undefined);
 				}}
 			>
 				<View style={styles.backdrop} />
@@ -143,7 +171,9 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 
 			<Drawer open={addModal} style={{ ...styles.drawer }}>
 				<ScrollView style={{ paddingBottom: 24 }} nestedScrollEnabled={true}>
-					<Text style={styles.modalTitle}>New Product</Text>
+					<Text style={styles.modalTitle}>
+						{productToUpdate ? "Update Product" : "New Product"}
+					</Text>
 
 					<View style={styles.inputContainer}>
 						<Text style={styles.inputLabel}>Name</Text>
@@ -183,7 +213,7 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 										const numericText = text.replace(/[^0-9]/g, "");
 										onChange(numericText);
 									}}
-									value={value as unknown as string}
+									value={String(value ? value : "")}
 									style={{
 										...styles.input,
 										borderColor: errors.price ? "red" : "#e8a123",
@@ -296,10 +326,12 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 					]}
 					onPress={handleSubmit(onSubmit)}
 				>
-					{createNewProduct.isPending ? (
+					{createNewProduct.isPending || updateProductById.isPending ? (
 						<ActivityIndicator size={16} />
 					) : (
-						<Text style={styles.buttonText}>Submit</Text>
+						<Text style={styles.buttonText}>
+							{productToUpdate ? "Update this product" : "Create"}
+						</Text>
 					)}
 				</Pressable>
 			</Drawer>
@@ -309,7 +341,7 @@ const Modal = ({ addModal }: { addModal: boolean }) => {
 	);
 };
 
-export default Modal;
+export default AddProductModal;
 
 const styles = StyleSheet.create({
 	overlay: {

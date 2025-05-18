@@ -2,10 +2,10 @@
 import { Tabs } from "expo-router";
 import { Platform } from "react-native";
 import ActionModal from "../components/ActionModal";
+import Modal from "../components/AddProductModal";
 import Alert from "../components/Alert";
 import DashboardIcon from "../components/icons/DashboardIcon";
 import ProductsIcon from "../components/icons/ProductsIcon";
-import Modal from "../components/Modal";
 import Sheet from "../components/Sheet";
 import { useModal } from "../context/ModalContext";
 import { PRIMARY_COLOR, SECONDARY_COLOR } from "../utils/constants";

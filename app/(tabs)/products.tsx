@@ -47,11 +47,15 @@ interface Product {
 
 const LeftActions = ({ product }: { product: Product }) => {
 	const { showSheet } = useModal();
-	const { setProductToDelete } = useProduct();
-
+	const { setProductToDelete, setProductToUpdate } = useProduct();
+	const { openModal } = useModal();
 	return (
 		<View style={styles.leftAction}>
 			<Pressable
+				onPress={() => {
+					setProductToUpdate(product);
+					openModal();
+				}}
 				style={({ pressed }) => [
 					{
 						backgroundColor: "#236AE8",
