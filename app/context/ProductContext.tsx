@@ -20,8 +20,11 @@ export type ProductContextType = {
 	createProduct: (data: CreateProductType) => void;
 	products: Product[];
 	productToDelete?: Product;
+	productToUpdate?: Product;
 	setProductToDelete: Dispatch<SetStateAction<Product | undefined>>;
+	setProductToUpdate: Dispatch<SetStateAction<Product | undefined>>;
 	removeProduct: () => void;
+	updateProduct: (id: number, data: CreateProductType) => void;
 	page: number;
 	loading: boolean;
 	reset: () => void;
@@ -54,6 +57,7 @@ const ProductProvider = ({ children }: { children: React.ReactNode }) => {
 	// List of products
 	const [products, setProducts] = useState<Product[]>([]);
 	const [productToDelete, setProductToDelete] = useState<Product>();
+	const [productToUpdate, setProductToUpdate] = useState<Product>();
 
 	const [loading, setLoading] = useState(false);
 	const [hasMore, setHasMore] = useState(true);
@@ -129,6 +133,32 @@ const ProductProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 	};
 
+	const updateProduct = async (id: number, data: CreateProductType) => {
+		try {
+			await axios.put(
+				`${process.env.EXPO_PUBLIC_API_URL}/api/v1/products/${id}`,
+				{
+					Name: data.name,
+					Price: data.price,
+					CategoryId: data.category,
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${session}`,
+					},
+				}
+			);
+		} catch (err) {
+			if (err instanceof AxiosError) {
+				if (err.response?.status === 401) {
+					setSession("");
+					setRefreshToken("");
+					router.replace("/login");
+				}
+			}
+		}
+	};
+
 	const removeProduct = async () => {
 		try {
 			await axios.delete(
@@ -167,10 +197,13 @@ const ProductProvider = ({ children }: { children: React.ReactNode }) => {
 			value={{
 				products,
 				productToDelete,
+				productToUpdate,
 				setProductToDelete,
+				setProductToUpdate,
 				removeProduct,
 				fetchProducts,
 				createProduct,
+				updateProduct,
 				reset,
 				loadMore,
 				page,
